@@ -1,73 +1,75 @@
-# React + TypeScript + Vite
+# SumWealth - Flexible Investment Calculator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modular, React-based investment calculator application that allows users to configure multiple calculator types (SIP, Step-Up SIP, SWP, Lumpsum) and view a summary of their investment plan.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Multiple Calculator Types:** SIP, Step-Up SIP, SWP, Lumpsum.
+- **Single-Step Configuration:** Add and configure calculators in a single modal flow.
+- **Responsive Design:** Works seamlessly on mobile, tablet, and desktop.
+- **Theming:** Auto-detects system theme (Light/Dark) with manual toggle.
+- **Accessibility:** Keyboard navigable, screen reader friendly, and focus management.
+- **No External Logic libraries:** Built with pure React Context, Reducers, and CSS Variables.
 
-## React Compiler
+## 🛠 Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React 18** (Functional Components, Hooks)
+- **TypeScript**
+- **Plain CSS** (CSS Variables, Flexbox/Grid)
+- **Vite** (Build Tool)
 
-## Expanding the ESLint configuration
+## 📂 Project Structure
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+├── components/       # Reusable UI components (Header, Modal, Inputs)
+├── context/          # Global State (Theme, Calculator List)
+├── features/         # Feature-specific logic
+│   └── calculators/  # Calculator forms, cards, and configuration logic
+├── hooks/           # Custom hooks (if any specific ones added)
+├── styles/           # Global styles and variables
+├── types/            # TypeScript interfaces
+└── utils/            # Validators and formatters
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🏃‍♂️ Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1.  **Install Dependencies:**
+    ```bash
+    npm install
+    ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2.  **Run Development Server:**
+    ```bash
+    npm run dev
+    ```
+
+3.  **Build for Production:**
+    ```bash
+    npm run build
+    ```
+
+## 🏗 Architecture & Data Flow
+
+1.  **State Management:**
+    -   `CalculatorContext` uses `useReducer` to manage the array of configured calculators.
+    -   Actions: `ADD_CALCULATOR`, `UPDATE_CALCULATOR`, `DELETE_CALCULATOR`.
+    -   `ThemeContext` manages the `data-theme` attribute on the root element.
+
+2.  **Adding a New Calculator Type:**
+    1.  Add the type literal to `CalculatorType` in `src/types/index.ts`.
+    2.  Define the configuration interface (e.g., `NewCalcConfig`) in `src/types/index.ts`.
+    3.  Create a Form Component (e.g., `NewCalcForm.tsx`) in `src/features/calculators/forms/`.
+    4.  Update `CalculatorConfigModal.tsx` to include the new type option and render the new form.
+    5.  Update `CalculatorCard.tsx` to display the specific details for this new type.
+    6.  Add validation logic in `src/utils/validation.ts` if needed.
+
+## 🎨 Theming
+
+The app uses CSS variables defined in `src/styles/variables.css`.
+-   **Auto-detection:** On first load, checks system time (6 AM - 6 PM = Light).
+-   **Toggle:** User can manually toggle themes, which overrides the auto-detection and saves to `localStorage`.
+
+## 🧮 Calculation Logic
+
+Currently, the "Calculate All" button aggregates the user input and prints the configuration JSON to the browser console. No financial projections are performed in this version.

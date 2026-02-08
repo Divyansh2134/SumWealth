@@ -1,0 +1,39 @@
+.sticky-button {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    color: white;
+    font-size: 2.5rem;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, background-color 0.2s;
+    z-index: 50;
+    padding-bottom: 4px;
+    /* Visual centering adjustment */
+}
+
+.sticky-button:hover {
+    transform: scale(1.05);
+    background-color: var(--accent-hover);
+}
+
+.sticky-button:active {
+    transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+    .sticky-button {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: 56px;
+        height: 56px;
+        font-size: 2rem;
+    }
+}

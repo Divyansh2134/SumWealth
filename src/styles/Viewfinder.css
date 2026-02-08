@@ -1,0 +1,50 @@
+.viewfinder {
+    padding: 2rem 0;
+    min-height: calc(100vh - var(--header-height));
+    position: relative;
+}
+
+.viewfinder-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.viewfinder-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.empty-state-text {
+    font-size: 1.25rem;
+    max-width: 400px;
+}
+
+@media (max-width: 768px) {
+    .viewfinder-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .viewfinder-title {
+        font-size: 1.25rem;
+    }
+}
