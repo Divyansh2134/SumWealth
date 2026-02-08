@@ -1,0 +1,396 @@
+/* Main Calculator Container */
+.calculator {
+    width: 380px;
+    /* Compact width */
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+    padding: 24px;
+    /* Reduced padding */
+    font-family: 'Inter', system-ui, sans-serif;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    background-color: #ffffff;
+    margin: 20px auto;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 16px 0;
+}
+
+/* Asset List Header */
+.header-list {
+    margin-bottom: 16px;
+}
+
+.asset-scroll {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.asset-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background-color: #f5f7fa;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+    transition: all 0.2s;
+}
+
+.asset-pill:hover {
+    background-color: #eef2f6;
+}
+
+.asset-pill.active {
+    background-color: #1a1a1a;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.asset-type-badge {
+    font-size: 10px;
+    padding: 2px 5px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    color: inherit;
+    font-weight: 600;
+}
+
+.asset-pill.active .asset-type-badge {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.add-asset-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    border: 1px dashed #ccc;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: #888;
+    transition: all 0.2s ease;
+}
+
+.add-asset-btn:hover {
+    border-color: #1a1a1a;
+    color: #1a1a1a;
+    background-color: #f9f9f9;
+}
+
+/* Investment Type Pills */
+.investment-type {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f0f2f5;
+    padding: 4px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+
+.pill {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #777;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.pill.active {
+    background-color: #fff;
+    color: #1a1a1a;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Form Fields */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    /* Reduced gap */
+}
+
+/* Slider Input Styles */
+.slider-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slider-header label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Modern Input Wrapper */
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: #f7f9fc;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 6px 10px;
+    width: 110px;
+    transition: all 0.2s ease;
+}
+
+.input-wrapper:hover {
+    background-color: #eef2f6;
+}
+
+.input-wrapper:focus-within {
+    background-color: #fff;
+    border-color: #2196F3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.number-input {
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+    width: 100%;
+    text-align: right;
+    outline: none;
+    padding-right: 4px;
+    font-family: inherit;
+    -moz-appearance: textfield;
+    /* Firefox remove spinner */
+}
+
+/* Remove Arrows/Spinners */
+.number-input::-webkit-outer-spin-button,
+.number-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.unit {
+    font-size: 13px;
+    color: #888;
+    font-weight: 500;
+}
+
+/* Custom Range Slider with Dynamic Fill */
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    /* Explicit height for input background */
+    background: #e0e0e0;
+    /* Gray base (unfilled) */
+    background-image: linear-gradient(#2196F3, #2196F3);
+    /* Fill color */
+    background-repeat: no-repeat;
+    /* background-size is set via inline style in JS */
+    border-radius: 3px;
+    margin: 8px 0;
+    cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #2196F3;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(33, 150, 243, 0.25);
+    transition: transform 0.1s ease;
+    margin-top: -7px;
+    /* Center relative to 6px track */
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: transparent;
+    /* Track is transparent so Input bg shows */
+    border-radius: 3px;
+    border: none;
+}
+
+/* Firefox Styles */
+input[type=range]::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+}
+
+input[type=range]::-moz-range-progress {
+    background-color: #2196F3;
+    height: 6px;
+    border-radius: 3px;
+}
+
+input[type=range]::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border: 2px solid #2196F3;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+}
+
+/* Calculate Button */
+.action-area {
+    margin-top: 24px;
+}
+
+.calculate-btn {
+    width: 100%;
+    padding: 16px;
+    background-color: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.calculate-btn:hover {
+    background-color: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.calculate-btn:active {
+    transform: translateY(0);
+}
+
+/* Modal Styles - Compact */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    width: 340px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    animation: scaleIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    color: #1a1a1a;
+}
+
+.modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.modal-field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.modal-field input,
+.modal-field select {
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+    background-color: #f9f9f9;
+}
+
+.modal-field input:focus,
+.modal-field select:focus {
+    border-color: #2196F3;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.modal-actions button {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancel-btn {
+    background: transparent;
+    color: #666;
+}
+
+.cancel-btn:hover {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.add-btn {
+    background-color: #1a1a1a;
+    color: #fff;
+}
+
+.add-btn:hover {
+    background-color: #333;
+    transform: translateY(-1px);
+}
