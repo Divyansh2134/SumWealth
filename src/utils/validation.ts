@@ -1,6 +1,6 @@
 import type { CalculatorType } from '../types';
 
-export const validateRequired = (value: any): string | null => {
+export const validateRequired = (value: string | number | null | undefined): string | null => {
     if (value === null || value === undefined || value === '') {
         return 'This field is required';
     }

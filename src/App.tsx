@@ -1,8 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { CalculatorProvider } from './context/CalculatorContext';
-import { Header } from './components/Header';
-import { Viewfinder } from './features/calculators/Viewfinder';
+import { TabbedCalculatorView } from './features/calculators/TabbedCalculatorView';
 import './styles/global.css';
 import './styles/variables.css';
 
@@ -11,8 +10,7 @@ const App: React.FC = () => {
     <ThemeProvider>
       <CalculatorProvider>
         <div className="app-min-height">
-          <Header />
-          <Viewfinder />
+          <TabbedCalculatorView />
         </div>
       </CalculatorProvider>
     </ThemeProvider>

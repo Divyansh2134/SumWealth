@@ -64,3 +64,31 @@ export const Select: React.FC<SelectProps> = ({ label, error, options, className
     </div>
   );
 };
+
+interface ToggleGroupProps {
+  label?: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  className?: string;
+}
+
+export const ToggleGroup: React.FC<ToggleGroupProps> = ({ label, value, onChange, options, className = '' }) => {
+  return (
+    <div className={`form-group ${className}`}>
+        {label && <label className="form-label">{label}</label>}
+        <div className="toggle-group-container">
+            {options.map((option) => (
+                <button
+                    key={option.value}
+                    type="button"
+                    className={`toggle-group-item ${value === option.value ? 'active' : ''}`}
+                    onClick={() => onChange(option.value)}
+                >
+                    {option.label}
+                </button>
+            ))}
+        </div>
+    </div>
+  );
+};

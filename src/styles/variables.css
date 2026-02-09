@@ -1,32 +1,76 @@
 :root {
-  /* Light Theme */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --text-primary: #1a1a1a;
-  --text-secondary: #666666;
-  --accent-color: #2563eb;
-  --accent-hover: #1d4ed8;
-  --border-color: #e5e5e5;
-  --error-color: #dc2626;
-  --success-color: #16a34a;
-  --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --modal-overlay: rgba(0, 0, 0, 0.5);
-  
-  /* Layout */
+  /* Material Design - Like Colors */
+  --primary-color: #6200ea;
+  /* Deep Purple */
+  --primary-light: #b388ff;
+  --secondary-color: #03dac6;
+  /* Teal */
+
+  --bg-primary: #f5f5f5;
+  /* Light Grey Background */
+  --card-bg: #ffffff;
+  /* White Card Surface */
+
+  --text-primary: #121212;
+  --text-secondary: #606060;
+
+  --border-color: #e0e0e0;
+
+  --error-color: #b00020;
+  --success-color: #00c853;
+  --warning-color: #ffab00;
+
+  --container-max-width: 700px;
   --header-height: 64px;
-  --border-radius: 8px;
-  --container-max-width: 1200px;
+
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+
+  --card-selected-bg: #f3e5f5;
+  /* Light Purple for Light Mode */
+}
+
+* {
+  box-sizing: border-box;
 }
 
 [data-theme='dark'] {
   /* Dark Theme */
-  --bg-primary: #121212;
-  --bg-secondary: #1e1e1e;
-  --text-primary: #ffffff;
-  --text-secondary: #a3a3a3;
-  --accent-color: #3b82f6;
-  --accent-hover: #60a5fa;
-  --border-color: #333333;
-  --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
-  --modal-overlay: rgba(0, 0, 0, 0.7);
+  --bg-primary: #050505;
+  /* Pitch black / very dark gray */
+  --bg-secondary: #121212;
+
+  --card-bg: #141414;
+  /* Dark card surface, distinct from bg */
+
+  --text-primary: #e0e0e0;
+  /* Slightly off-white for less eye strain */
+  --text-secondary: #a0a0a0;
+
+  /* Adjust Primary for Dark Mode (Lighter/Brighter to pop) */
+  --primary-color: #7c4dff;
+  /* Lighter Deep Purple */
+  --primary-light: #b388ff;
+
+  --border-color: #2d2d2d;
+
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  --modal-overlay: rgba(0, 0, 0, 0.8);
+
+  /* Override gradient for body to be dark */
+  --body-bg-gradient: linear-gradient(to bottom right, #000000, #1a0529);
+  /* Subtle purple hint in darkness */
+
+  --card-selected-bg: rgba(124, 77, 255, 0.15);
+  /* Dark Transparent Purple for selection */
+}
+
+/* Apply the gradient variable to body */
+body {
+  margin: 0;
+  font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-primary);
+  background-image: var(--body-bg-gradient, linear-gradient(to bottom right, var(--bg-primary), #ede7f6));
+  min-height: 100vh;
+  color: var(--text-primary);
 }

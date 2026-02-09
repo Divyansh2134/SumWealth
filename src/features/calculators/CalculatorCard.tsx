@@ -1,17 +1,17 @@
 import React from 'react';
 import type { CalculatorConfig } from '../../types';
 import { getCalculatorLabel } from '../../utils/validation';
-import { formatCurrency, formatDate } from '../../utils/format';
+import { formatCurrency } from '../../utils/format';
 import '../../styles/CalculatorCard.css';
 
 interface CalculatorCardProps {
   config: CalculatorConfig;
-  onEdit: (config: CalculatorConfig) => void;
-  onDelete: (id: string) => void;
+  onEdit?: (config: CalculatorConfig) => void;
+  onDelete?: (id: string) => void;
+  // Made optional as Viewfinder now handles these interaction differently or reuses this component
 }
 
 export const CalculatorCard: React.FC<CalculatorCardProps> = ({ config, onEdit, onDelete }) => {
-
 
   const renderDetails = () => {
     switch (config.type) {
@@ -77,33 +77,36 @@ export const CalculatorCard: React.FC<CalculatorCardProps> = ({ config, onEdit, 
       <div className="card-header">
         <span className="card-type-badge">{getCalculatorLabel(config.type)}</span>
         <div className="card-actions">
-          <button 
-            className="icon-btn" 
-            onClick={() => onEdit(config)}
-            aria-label={`Edit ${config.name}`}
-          >
-            ✎
-          </button>
-          <button 
-            className="icon-btn delete" 
-            onClick={() => onDelete(config.id)}
-            aria-label={`Delete ${config.name}`}
-          >
-            ×
-          </button>
+          {onEdit && (
+              <button 
+                className="icon-btn" 
+                onClick={() => onEdit(config)}
+                aria-label={`Edit ${config.name}`}
+              >
+                ✎
+              </button>
+          )}
+          {onDelete && (
+              <button 
+                className="icon-btn delete" 
+                onClick={() => onDelete(config.id)}
+                aria-label={`Delete ${config.name}`}
+              >
+                ×
+              </button>
+          )}
         </div>
       </div>
-      <h3 className="card-title">{config.name}</h3>
+      <h3 className="card-title">{config.name || `${config.type}`}</h3>
       <div className="card-body">
         {renderDetails()}
-        <div className="card-row">
-            <span className="card-label">Start Date:</span>
-            <span className="card-value">{formatDate(config.startDate)}</span>
-        </div>
-        <div className="card-row">
-            <span className="card-label">Duration:</span>
-            <span className="card-value">{config.durationMonths} Months</span>
-        </div>
+
+        {'durationYears' in config && (
+            <div className="card-row">
+                <span className="card-label">Duration:</span>
+                <span className="card-value">{(config as any).durationYears} Years</span>
+            </div>
+        )}
       </div>
     </div>
   );

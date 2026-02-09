@@ -1,33 +1,32 @@
 import React, { useState } from 'react';
 import type { SWPConfig, SWPFrequency } from '../../../types';
-import { Input, Select } from '../../../components/Inputs';
-import { validatePositiveNumber, validateDate } from '../../../utils/validation';
+import { ToggleGroup } from '../../../components/Inputs';
+import { SliderInput } from '../../../components/SliderInput';
+import { validatePositiveNumber } from '../../../utils/validation';
 
 interface SWPFormProps {
   initialData?: Partial<SWPConfig>;
-  onSubmit: (data: Omit<SWPConfig, 'id' | 'createdAt' | 'type'>) => void;
+  onSubmit: (data: Omit<SWPConfig, 'id' | 'createdAt' | 'type' | 'name'>) => void;
   onCancel: () => void;
+  isInline?: boolean;
 }
 
-export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCancel }) => {
+export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCancel, isInline }) => {
   const [formData, setFormData] = useState({
-    name: initialData?.name || '',
-    lumpSumAmount: initialData?.lumpSumAmount?.toString() || '',
-    startDate: initialData?.startDate || new Date().toISOString().split('T')[0],
-    withdrawalAmount: initialData?.withdrawalAmount?.toString() || '',
+    lumpSumAmount: initialData?.lumpSumAmount || 500000,
+    withdrawalAmount: initialData?.withdrawalAmount || 5000,
     frequency: (initialData?.frequency || 'monthly') as SWPFrequency,
-    durationMonths: initialData?.durationMonths?.toString() || '',
+    durationYears: initialData?.durationYears || 10,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
+  const handleChange = (field: keyof typeof formData, value: string | number) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
-        delete newErrors[name];
+        delete newErrors[field];
         return newErrors;
       });
     }
@@ -36,19 +35,16 @@ export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCance
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.name) newErrors.name = 'Required';
-    
     const lumpSumError = validatePositiveNumber(Number(formData.lumpSumAmount), 'Lumpsum Amount');
     if (lumpSumError) newErrors.lumpSumAmount = lumpSumError;
 
     const withdrawalError = validatePositiveNumber(Number(formData.withdrawalAmount), 'Withdrawal Amount');
     if (withdrawalError) newErrors.withdrawalAmount = withdrawalError;
 
-    const dateError = validateDate(formData.startDate);
-    if (dateError) newErrors.startDate = dateError;
 
-    const durationError = validatePositiveNumber(Number(formData.durationMonths), 'Duration');
-    if (durationError) newErrors.durationMonths = durationError;
+
+    const durationError = validatePositiveNumber(Number(formData.durationYears), 'Duration');
+    if (durationError) newErrors.durationYears = durationError;
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -58,85 +54,72 @@ export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCance
     e.preventDefault();
     if (validate()) {
       onSubmit({
-        name: formData.name,
         lumpSumAmount: Number(formData.lumpSumAmount),
-        startDate: formData.startDate,
         withdrawalAmount: Number(formData.withdrawalAmount),
         frequency: formData.frequency,
-        durationMonths: Number(formData.durationMonths),
+        durationYears: Number(formData.durationYears),
       });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      <Input
-        label="Calculator Name"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        error={errors.name}
-        required
-      />
-      <Input
-        label="Initial Investment (₹)"
-        name="lumpSumAmount"
-        type="number"
-        value={formData.lumpSumAmount}
-        onChange={handleChange}
-        error={errors.lumpSumAmount}
-        required
-      />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-        <Input
-          label="Withdrawal Amount (₹)"
-          name="withdrawalAmount"
-          type="number"
-          value={formData.withdrawalAmount}
-          onChange={handleChange}
-          error={errors.withdrawalAmount}
-          required
+    <form onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
+      <div className="form-section">
+        {/* Name input moved to header */}
+        
+        <SliderInput
+            label="Total Investment"
+            value={formData.lumpSumAmount}
+            onChange={(val) => handleChange('lumpSumAmount', val)}
+            min={10000}
+            max={10000000}
+            step={10000}
+            unit="₹"
+            error={errors.lumpSumAmount}
         />
-        <Select
-          label="Frequency"
-          name="frequency"
-          value={formData.frequency}
-          onChange={handleChange}
-          options={[
-            { value: 'monthly', label: 'Monthly' },
-            { value: 'quarterly', label: 'Quarterly' },
-            { value: 'annually', label: 'Annually' },
-          ]}
-          required
-        />
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-        <Input
-          label="Start Date"
-          name="startDate"
-          type="date"
-          value={formData.startDate}
-          onChange={handleChange}
-          error={errors.startDate}
-          required
-        />
-        <Input
-          label="Duration (Months)"
-          name="durationMonths"
-          type="number"
-          value={formData.durationMonths}
-          onChange={handleChange}
-          error={errors.durationMonths}
-          required
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'end' }}>
+            <SliderInput
+                label="Withdrawal Amount"
+                value={formData.withdrawalAmount}
+                onChange={(val) => handleChange('withdrawalAmount', val)}
+                min={500}
+                max={100000}
+                step={500}
+                unit="₹"
+                error={errors.withdrawalAmount}
+            />
+            <ToggleGroup
+                value={formData.frequency}
+                onChange={(val) => handleChange('frequency', val)}
+                options={[
+                    { value: 'monthly', label: 'Mo' },
+                    { value: 'quarterly', label: 'Qt' },
+                    { value: 'annually', label: 'Yr' },
+                ]}
+            />
+        </div>
+
+        <SliderInput
+            label="Time Period"
+            value={formData.durationYears}
+            onChange={(val) => handleChange('durationYears', val)}
+            min={1}
+            max={30}
+            step={1}
+            unit="Years"
+            error={errors.durationYears}
         />
       </div>
 
       <div className="form-actions">
-        <button type="button" className="btn btn-secondary" onClick={onCancel}>
-          Cancel
-        </button>
+        {!isInline && (
+            <button type="button" className="btn btn-secondary" onClick={onCancel}>
+                Cancel
+            </button>
+        )}
         <button type="submit" className="btn btn-primary">
-          Save SWP
+          {isInline ? 'Update' : 'Add SWP'}
         </button>
       </div>
     </form>

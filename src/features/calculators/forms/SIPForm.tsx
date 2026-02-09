@@ -1,33 +1,31 @@
 import React, { useState } from 'react';
 import type { SIPConfig } from '../../../types';
-import { Input } from '../../../components/Inputs';
-import { validateRequired, validatePositiveNumber, validateRange, validateDate } from '../../../utils/validation';
+import { SliderInput } from '../../../components/SliderInput';
+import { validatePositiveNumber, validateRange } from '../../../utils/validation';
 
 interface SIPFormProps {
   initialData?: Partial<SIPConfig>;
-  onSubmit: (data: Omit<SIPConfig, 'id' | 'createdAt' | 'type'>) => void;
+  onSubmit: (data: Omit<SIPConfig, 'id' | 'createdAt' | 'type' | 'name'>) => void;
   onCancel: () => void;
+  isInline?: boolean; // New prop to adjust layout/buttons if needed
 }
 
-export const SIPForm: React.FC<SIPFormProps> = ({ initialData, onSubmit, onCancel }) => {
+export const SIPForm: React.FC<SIPFormProps> = ({ initialData, onSubmit, onCancel, isInline }) => {
   const [formData, setFormData] = useState({
-    name: initialData?.name || '',
-    monthlyAmount: initialData?.monthlyAmount?.toString() || '',
-    startDate: initialData?.startDate || new Date().toISOString().split('T')[0],
-    durationMonths: initialData?.durationMonths?.toString() || '',
-    expectedRatePercent: initialData?.expectedRatePercent?.toString() || '',
+    monthlyAmount: initialData?.monthlyAmount || 5000,
+    durationYears: initialData?.durationYears || 10,
+    expectedRatePercent: initialData?.expectedRatePercent || 12,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error on change
-    if (errors[name]) {
+  const handleChange = (field: keyof typeof formData, value: string | number) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear specific error
+    if (errors[field]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
-        delete newErrors[name];
+        delete newErrors[field];
         return newErrors;
       });
     }
@@ -35,18 +33,16 @@ export const SIPForm: React.FC<SIPFormProps> = ({ initialData, onSubmit, onCance
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-
-    const nameError = validateRequired(formData.name);
-    if (nameError) newErrors.name = nameError;
-
+    
+    // Name is optional now, will auto-generate if empty on submit
+    
     const amountError = validatePositiveNumber(Number(formData.monthlyAmount), 'Monthly Amount');
     if (amountError) newErrors.monthlyAmount = amountError;
 
-    const dateError = validateDate(formData.startDate);
-    if (dateError) newErrors.startDate = dateError;
 
-    const durationError = validatePositiveNumber(Number(formData.durationMonths), 'Duration');
-    if (durationError) newErrors.durationMonths = durationError;
+
+    const durationError = validatePositiveNumber(Number(formData.durationYears), 'Duration');
+    if (durationError) newErrors.durationYears = durationError;
 
     const rateError = validateRange(Number(formData.expectedRatePercent), 1, 30, 'Expected Rate');
     if (rateError) newErrors.expectedRatePercent = rateError;
@@ -55,77 +51,70 @@ export const SIPForm: React.FC<SIPFormProps> = ({ initialData, onSubmit, onCance
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (validate()) {
       onSubmit({
-        name: formData.name,
         monthlyAmount: Number(formData.monthlyAmount),
-        startDate: formData.startDate,
-        durationMonths: Number(formData.durationMonths),
+        durationYears: Number(formData.durationYears),
         expectedRatePercent: Number(formData.expectedRatePercent),
       });
     }
   };
 
+  // Auto-save effect/debounce? 
+  // For now, let's stick to explicit save button in inline mode unless spec demanded live update "I can still click... but bar main part". 
+  // "each added calculator... upon clicking it will open configured values".
+  // Let's keep a "Update / Save" button for clarity, or auto-save if isInline?
+  // User didn't explicitly ask for auto-save, just "edit". 
+
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      <Input
-        label="Calculator Name"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        error={errors.name}
-        required
-        placeholder="e.g., My Retirement SIP"
-      />
-      <Input
-        label="Monthly Amount (₹)"
-        name="monthlyAmount"
-        type="number"
-        value={formData.monthlyAmount}
-        onChange={handleChange}
-        error={errors.monthlyAmount}
-        required
-        min="500"
-      />
-      <Input
-        label="Start Date"
-        name="startDate"
-        type="date"
-        value={formData.startDate}
-        onChange={handleChange}
-        error={errors.startDate}
-        required
-      />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-        <Input
-          label="Duration (Months)"
-          name="durationMonths"
-          type="number"
-          value={formData.durationMonths}
-          onChange={handleChange}
-          error={errors.durationMonths}
-          required
+    <form onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
+      <div className="form-section">
+        {/* Name input moved to header */}
+        
+        <SliderInput
+            label="Monthly Investment"
+            value={formData.monthlyAmount}
+            onChange={(val) => handleChange('monthlyAmount', val)}
+            min={500}
+            max={100000}
+            step={500}
+            unit="₹"
+            error={errors.monthlyAmount}
         />
-        <Input
-          label="Exp. Return Rate (%)"
-          name="expectedRatePercent"
-          type="number"
-          value={formData.expectedRatePercent}
-          onChange={handleChange}
-          error={errors.expectedRatePercent}
-          required
-          step="0.1"
+
+        <SliderInput
+            label="Expected Return Rate"
+            value={formData.expectedRatePercent}
+            onChange={(val) => handleChange('expectedRatePercent', val)}
+            min={1}
+            max={30}
+            step={0.1}
+            unit="%"
+            error={errors.expectedRatePercent}
+        />
+
+        <SliderInput
+            label="Time Period"
+            value={formData.durationYears}
+            onChange={(val) => handleChange('durationYears', val)}
+            min={1}
+            max={50}
+            step={1}
+            unit="Years"
+            error={errors.durationYears}
         />
       </div>
 
       <div className="form-actions">
-        <button type="button" className="btn btn-secondary" onClick={onCancel}>
-          Cancel
-        </button>
+        {!isInline && (
+            <button type="button" className="btn btn-secondary" onClick={onCancel}>
+                Cancel
+            </button>
+        )}
         <button type="submit" className="btn btn-primary">
-          Save SIP
+          {isInline ? 'Update' : 'Add SIP'}
         </button>
       </div>
     </form>

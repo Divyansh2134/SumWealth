@@ -21,11 +21,20 @@ const formatAssetName = (name: string) => {
     return name.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
 };
 
-const SliderInput = ({ label, value, onChange, min = 0, max = 100, unit = "%" }: any) => {
+interface SliderInputProps {
+    label: string;
+    value: string | number;
+    onChange: (val: string) => void;
+    min?: number;
+    max?: number;
+    unit?: string;
+}
+
+const SliderInput = ({ label, value, onChange, min = 0, max = 100, unit = "%" }: SliderInputProps) => {
     const val = value === "" ? 0 : Number(value);
     const progress = ((val - min) / (max - min)) * 100;
 
-    const handleInputChange = (e: any) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newVal = e.target.value;
         // Prevent negative values
         if (newVal === "" || Number(newVal) >= 0) {
@@ -83,7 +92,14 @@ export default function InvestmentCalculator() {
     // Derived state for the active asset
     const activeAssetIndex = assetsList.findIndex(a => a.id === activeAssetId);
     const activeAsset = assetsList[activeAssetIndex];
-    const activeConfig = activeAsset ? assets[activeAsset.type] : assets.mutualFund;
+    const activeConfig = (activeAsset ? assets[activeAsset.type] : assets.mutualFund) as {
+        principalAmount?: boolean;
+        expectedReturnRate?: boolean;
+        timePeriodYears?: boolean;
+        stepUpRate?: boolean;
+        currencyBoostRate?: boolean;
+        inflationRate?: boolean;
+    };
 
     // Handler to update fields for the active asset
     const updateActiveAsset = (field: keyof AssetData, value: string) => {

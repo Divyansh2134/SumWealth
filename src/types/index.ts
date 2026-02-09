@@ -1,4 +1,4 @@
-export type CalculatorType = 'SIP' | 'StepUpSIP' | 'SWP' | 'Lumpsum';
+export type CalculatorType = 'SIP' | 'StepUpSIP' | 'SWP' | 'Lumpsum' | 'Inflation' | 'Currency';
 
 export type StepUpFrequency = 'quarterly' | 'semiannually' | 'annually';
 export type SWPFrequency = 'monthly' | 'quarterly' | 'annually';
@@ -13,16 +13,14 @@ export interface BaseCalculatorConfig {
 export interface SIPConfig extends BaseCalculatorConfig {
     type: 'SIP';
     monthlyAmount: number;
-    startDate: string; // ISO string (YYYY-MM-DD)
-    durationMonths: number;
+    durationYears: number;
     expectedRatePercent: number;
 }
 
 export interface StepUpSIPConfig extends BaseCalculatorConfig {
     type: 'StepUpSIP';
     initialMonthlyAmount: number;
-    startDate: string;
-    durationMonths: number;
+    durationYears: number;
     expectedRatePercent: number;
     stepUpPercentage: number;
     stepUpFrequency: StepUpFrequency;
@@ -31,21 +29,29 @@ export interface StepUpSIPConfig extends BaseCalculatorConfig {
 export interface SWPConfig extends BaseCalculatorConfig {
     type: 'SWP';
     lumpSumAmount: number;
-    startDate: string;
     withdrawalAmount: number;
     frequency: SWPFrequency;
-    durationMonths: number;
+    durationYears: number;
 }
 
 export interface LumpsumConfig extends BaseCalculatorConfig {
     type: 'Lumpsum';
     lumpSumAmount: number;
-    startDate: string; // ISO string
     expectedRatePercent: number;
-    durationMonths: number;
+    durationYears: number;
 }
 
-export type CalculatorConfig = SIPConfig | StepUpSIPConfig | SWPConfig | LumpsumConfig;
+export interface InflationConfig extends BaseCalculatorConfig {
+    type: 'Inflation';
+    rate: number;
+}
+
+export interface CurrencyConfig extends BaseCalculatorConfig {
+    type: 'Currency';
+    rate: number;
+}
+
+export type CalculatorConfig = SIPConfig | StepUpSIPConfig | SWPConfig | LumpsumConfig | InflationConfig | CurrencyConfig;
 
 export interface ValidationResult {
     isValid: boolean;
@@ -56,4 +62,4 @@ export interface ValidationResult {
 export type CalculatorAction =
     | { type: 'ADD_CALCULATOR'; payload: CalculatorConfig }
     | { type: 'UPDATE_CALCULATOR'; payload: CalculatorConfig }
-    | { type: 'DELETE_CALCULATOR'; payload: string }; // payload is id
+    | { type: 'DELETE_CALCULATOR'; payload: string };

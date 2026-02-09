@@ -1,32 +1,30 @@
 import React, { useState } from 'react';
 import type { LumpsumConfig } from '../../../types';
-import { Input } from '../../../components/Inputs';
-import { validatePositiveNumber, validateRange, validateDate } from '../../../utils/validation';
+import { SliderInput } from '../../../components/SliderInput';
+import { validatePositiveNumber, validateRange } from '../../../utils/validation';
 
 interface LumpsumFormProps {
   initialData?: Partial<LumpsumConfig>;
-  onSubmit: (data: Omit<LumpsumConfig, 'id' | 'createdAt' | 'type'>) => void;
+  onSubmit: (data: Omit<LumpsumConfig, 'id' | 'createdAt' | 'type' | 'name'>) => void;
   onCancel: () => void;
+  isInline?: boolean;
 }
 
-export const LumpsumForm: React.FC<LumpsumFormProps> = ({ initialData, onSubmit, onCancel }) => {
+export const LumpsumForm: React.FC<LumpsumFormProps> = ({ initialData, onSubmit, onCancel, isInline }) => {
   const [formData, setFormData] = useState({
-    name: initialData?.name || '',
-    lumpSumAmount: initialData?.lumpSumAmount?.toString() || '',
-    startDate: initialData?.startDate || new Date().toISOString().split('T')[0],
-    expectedRatePercent: initialData?.expectedRatePercent?.toString() || '',
-    durationMonths: initialData?.durationMonths?.toString() || '',
+    lumpSumAmount: initialData?.lumpSumAmount || 100000,
+    expectedRatePercent: initialData?.expectedRatePercent || 12,
+    durationYears: initialData?.durationYears || 10,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
+  const handleChange = (field: keyof typeof formData, value: string | number) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
-        delete newErrors[name];
+        delete newErrors[field];
         return newErrors;
       });
     }
@@ -35,16 +33,13 @@ export const LumpsumForm: React.FC<LumpsumFormProps> = ({ initialData, onSubmit,
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.name) newErrors.name = 'Required';
-    
     const amountError = validatePositiveNumber(Number(formData.lumpSumAmount), 'Investment Amount');
     if (amountError) newErrors.lumpSumAmount = amountError;
 
-    const dateError = validateDate(formData.startDate);
-    if (dateError) newErrors.startDate = dateError;
 
-    const durationError = validatePositiveNumber(Number(formData.durationMonths), 'Duration');
-    if (durationError) newErrors.durationMonths = durationError;
+
+    const durationError = validatePositiveNumber(Number(formData.durationYears), 'Duration');
+    if (durationError) newErrors.durationYears = durationError;
 
     const rateError = validateRange(Number(formData.expectedRatePercent), 1, 30, 'Expected Rate');
     if (rateError) newErrors.expectedRatePercent = rateError;
@@ -57,71 +52,62 @@ export const LumpsumForm: React.FC<LumpsumFormProps> = ({ initialData, onSubmit,
     e.preventDefault();
     if (validate()) {
       onSubmit({
-        name: formData.name,
         lumpSumAmount: Number(formData.lumpSumAmount),
-        startDate: formData.startDate,
         expectedRatePercent: Number(formData.expectedRatePercent),
-        durationMonths: Number(formData.durationMonths),
+        durationYears: Number(formData.durationYears),
       });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      <Input
-        label="Calculator Name"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        error={errors.name}
-        required
-      />
-      <Input
-        label="Lumpsum Amount (₹)"
-        name="lumpSumAmount"
-        type="number"
-        value={formData.lumpSumAmount}
-        onChange={handleChange}
-        error={errors.lumpSumAmount}
-        required
-      />
-      <Input
-        label="Start Date"
-        name="startDate"
-        type="date"
-        value={formData.startDate}
-        onChange={handleChange}
-        error={errors.startDate}
-        required
-      />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-        <Input
-          label="Duration (Months)"
-          name="durationMonths"
-          type="number"
-          value={formData.durationMonths}
-          onChange={handleChange}
-          error={errors.durationMonths}
-          required
+    <form onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
+      <div className="form-section">
+        {/* Name input moved to header */}
+        
+        <SliderInput
+            label="Lumpsum Amount"
+            value={formData.lumpSumAmount}
+            onChange={(val) => handleChange('lumpSumAmount', val)}
+            min={5000}
+            max={10000000}
+            step={5000}
+            unit="₹"
+            error={errors.lumpSumAmount}
         />
-        <Input
-          label="Exp. Return Rate (%)"
-          name="expectedRatePercent"
-          type="number"
-          value={formData.expectedRatePercent}
-          onChange={handleChange}
-          error={errors.expectedRatePercent}
-          required
-          step="0.1"
+
+        <SliderInput
+            label="Expected Return Rate"
+            value={formData.expectedRatePercent}
+            onChange={(val) => handleChange('expectedRatePercent', val)}
+            min={1}
+            max={30}
+            step={0.1}
+            unit="%"
+            error={errors.expectedRatePercent}
         />
+
+        <SliderInput
+            label="Time Period"
+            value={formData.durationYears}
+            onChange={(val) => handleChange('durationYears', val)}
+            min={1}
+            max={50}
+            step={1}
+            unit="Years"
+            error={errors.durationYears}
+        />
+
+
       </div>
 
       <div className="form-actions">
-        <button type="button" className="btn btn-secondary" onClick={onCancel}>
-          Cancel
-        </button>
+        {!isInline && (
+            <button type="button" className="btn btn-secondary" onClick={onCancel}>
+                Cancel
+            </button>
+        )}
         <button type="submit" className="btn btn-primary">
-          Save Lumpsum
+          {isInline ? 'Update' : 'Add Lumpsum'}
         </button>
       </div>
     </form>
