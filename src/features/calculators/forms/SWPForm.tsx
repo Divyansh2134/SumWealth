@@ -9,14 +9,16 @@ interface SWPFormProps {
   onSubmit: (data: Omit<SWPConfig, 'id' | 'createdAt' | 'type' | 'name'>) => void;
   onCancel: () => void;
   isInline?: boolean;
+  id?: string;
 }
 
-export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCancel, isInline }) => {
+export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCancel, isInline, id }) => {
   const [formData, setFormData] = useState({
     lumpSumAmount: initialData?.lumpSumAmount || 500000,
     withdrawalAmount: initialData?.withdrawalAmount || 5000,
     frequency: (initialData?.frequency || 'monthly') as SWPFrequency,
     durationYears: initialData?.durationYears || 10,
+    expectedRatePercent: initialData?.expectedRatePercent || 12,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -58,12 +60,13 @@ export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCance
         withdrawalAmount: Number(formData.withdrawalAmount),
         frequency: formData.frequency,
         durationYears: Number(formData.durationYears),
+        expectedRatePercent: Number(formData.expectedRatePercent),
       });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
+    <form id={id} onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
       <div className="form-section">
         {/* Name input moved to header */}
         
@@ -78,7 +81,7 @@ export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCance
             error={errors.lumpSumAmount}
         />
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'end' }}>
+        <div className="form-row-responsive">
             <SliderInput
                 label="Withdrawal Amount"
                 value={formData.withdrawalAmount}
@@ -101,6 +104,17 @@ export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCance
         </div>
 
         <SliderInput
+            label="Expected Return (p.a)"
+            value={formData.expectedRatePercent}
+            onChange={(val) => handleChange('expectedRatePercent', val)}
+            min={1}
+            max={30}
+            step={0.5}
+            unit="%"
+            error={errors.expectedRatePercent}
+        />
+
+        <SliderInput
             label="Time Period"
             value={formData.durationYears}
             onChange={(val) => handleChange('durationYears', val)}
@@ -112,16 +126,16 @@ export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCance
         />
       </div>
 
-      <div className="form-actions">
-        {!isInline && (
+      {!isInline && (
+        <div className="form-actions">
             <button type="button" className="btn btn-secondary" onClick={onCancel}>
                 Cancel
             </button>
-        )}
-        <button type="submit" className="btn btn-primary">
-          {isInline ? 'Update' : 'Add SWP'}
-        </button>
-      </div>
+            <button type="submit" className="btn btn-primary">
+                Add SWP
+            </button>
+        </div>
+      )}
     </form>
   );
 };

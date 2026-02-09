@@ -8,9 +8,10 @@ interface CurrencyFormProps {
   onSubmit: (data: Omit<CurrencyConfig, 'id' | 'createdAt' | 'type' | 'name'>) => void;
   onCancel: () => void;
   isInline?: boolean;
+  id?: string;
 }
 
-export const CurrencyForm: React.FC<CurrencyFormProps> = ({ initialData, onSubmit, onCancel, isInline }) => {
+export const CurrencyForm: React.FC<CurrencyFormProps> = ({ initialData, onSubmit, onCancel, isInline, id }) => {
   const [formData, setFormData] = useState({
     rate: initialData?.rate || 0,
   });
@@ -49,7 +50,7 @@ export const CurrencyForm: React.FC<CurrencyFormProps> = ({ initialData, onSubmi
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
+    <form id={id} onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
       <div className="form-section">
         {/* Name input moved to header */}
         
@@ -66,16 +67,16 @@ export const CurrencyForm: React.FC<CurrencyFormProps> = ({ initialData, onSubmi
         <p className="field-hint">Positive values indicate appreciation (boost), negative values indicate depreciation (drag).</p>
       </div>
 
-      <div className="form-actions">
-        {!isInline && (
+      {!isInline && (
+        <div className="form-actions">
             <button type="button" className="btn btn-secondary" onClick={onCancel}>
                 Cancel
             </button>
-        )}
-        <button type="submit" className="btn btn-primary">
-          {isInline ? 'Update' : 'Add Currency Effect'}
-        </button>
-      </div>
+            <button type="submit" className="btn btn-primary">
+                Add Currency Effect
+            </button>
+        </div>
+      )}
     </form>
   );
 };

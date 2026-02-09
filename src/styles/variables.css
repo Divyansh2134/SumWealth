@@ -3,6 +3,7 @@
   --primary-color: #6200ea;
   /* Deep Purple */
   --primary-light: #b388ff;
+  --accent-color: var(--primary-color);
   --secondary-color: #03dac6;
   /* Teal */
 
@@ -20,7 +21,7 @@
   --success-color: #00c853;
   --warning-color: #ffab00;
 
-  --container-max-width: 700px;
+  --container-max-width: 1200px;
   --header-height: 64px;
 
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -48,9 +49,9 @@
   --text-secondary: #a0a0a0;
 
   /* Adjust Primary for Dark Mode (Lighter/Brighter to pop) */
-  --primary-color: #7c4dff;
   /* Lighter Deep Purple */
   --primary-light: #b388ff;
+  --accent-color: var(--primary-color);
 
   --border-color: #2d2d2d;
 

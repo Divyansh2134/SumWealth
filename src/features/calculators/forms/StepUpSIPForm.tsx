@@ -9,9 +9,10 @@ interface StepUpSIPFormProps {
   onSubmit: (data: Omit<StepUpSIPConfig, 'id' | 'createdAt' | 'type' | 'name'>) => void;
   onCancel: () => void;
   isInline?: boolean;
+  id?: string;
 }
 
-export const StepUpSIPForm: React.FC<StepUpSIPFormProps> = ({ initialData, onSubmit, onCancel, isInline }) => {
+export const StepUpSIPForm: React.FC<StepUpSIPFormProps> = ({ initialData, onSubmit, onCancel, isInline, id }) => {
   const [formData, setFormData] = useState({
     initialMonthlyAmount: initialData?.initialMonthlyAmount || 5000,
     durationYears: initialData?.durationYears || 10,
@@ -68,7 +69,7 @@ export const StepUpSIPForm: React.FC<StepUpSIPFormProps> = ({ initialData, onSub
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
+    <form id={id} onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
       <div className="form-section">
         {/* Name input moved to header */}
         
@@ -128,16 +129,16 @@ export const StepUpSIPForm: React.FC<StepUpSIPFormProps> = ({ initialData, onSub
         </div>
       </div>
 
-      <div className="form-actions">
-        {!isInline && (
+      {!isInline && (
+        <div className="form-actions">
             <button type="button" className="btn btn-secondary" onClick={onCancel}>
                 Cancel
             </button>
-        )}
-        <button type="submit" className="btn btn-primary">
-          {isInline ? 'Update' : 'Add Step Up SIP'}
-        </button>
-      </div>
+            <button type="submit" className="btn btn-primary">
+                Add Step Up SIP
+            </button>
+        </div>
+      )}
     </form>
   );
 };

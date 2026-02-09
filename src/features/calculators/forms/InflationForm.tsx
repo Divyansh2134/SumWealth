@@ -8,9 +8,10 @@ interface InflationFormProps {
   onSubmit: (data: Omit<InflationConfig, 'id' | 'createdAt' | 'type' | 'name'>) => void;
   onCancel: () => void;
   isInline?: boolean;
+  id?: string;
 }
 
-export const InflationForm: React.FC<InflationFormProps> = ({ initialData, onSubmit, onCancel, isInline }) => {
+export const InflationForm: React.FC<InflationFormProps> = ({ initialData, onSubmit, onCancel, isInline, id }) => {
   const [formData, setFormData] = useState({
     rate: initialData?.rate || 6,
   });
@@ -48,7 +49,7 @@ export const InflationForm: React.FC<InflationFormProps> = ({ initialData, onSub
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
+    <form id={id} onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
       <div className="form-section">
         {/* Name input moved to header */}
         
@@ -64,16 +65,16 @@ export const InflationForm: React.FC<InflationFormProps> = ({ initialData, onSub
         />
       </div>
 
-      <div className="form-actions">
-        {!isInline && (
+      {!isInline && (
+        <div className="form-actions">
             <button type="button" className="btn btn-secondary" onClick={onCancel}>
                 Cancel
             </button>
-        )}
-        <button type="submit" className="btn btn-primary">
-          {isInline ? 'Update' : 'Add Inflation'}
-        </button>
-      </div>
+            <button type="submit" className="btn btn-primary">
+                Add Inflation
+            </button>
+        </div>
+      )}
     </form>
   );
 };

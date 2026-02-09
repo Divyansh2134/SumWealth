@@ -104,7 +104,7 @@ export const CalculatorCard: React.FC<CalculatorCardProps> = ({ config, onEdit, 
         {'durationYears' in config && (
             <div className="card-row">
                 <span className="card-label">Duration:</span>
-                <span className="card-value">{(config as any).durationYears} Years</span>
+                <span className="card-value">{(config as { durationYears: number }).durationYears} Years</span>
             </div>
         )}
       </div>

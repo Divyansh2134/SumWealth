@@ -8,9 +8,10 @@ interface SIPFormProps {
   onSubmit: (data: Omit<SIPConfig, 'id' | 'createdAt' | 'type' | 'name'>) => void;
   onCancel: () => void;
   isInline?: boolean; // New prop to adjust layout/buttons if needed
+  id?: string;
 }
 
-export const SIPForm: React.FC<SIPFormProps> = ({ initialData, onSubmit, onCancel, isInline }) => {
+export const SIPForm: React.FC<SIPFormProps> = ({ initialData, onSubmit, onCancel, isInline, id }) => {
   const [formData, setFormData] = useState({
     monthlyAmount: initialData?.monthlyAmount || 5000,
     durationYears: initialData?.durationYears || 10,
@@ -69,7 +70,7 @@ export const SIPForm: React.FC<SIPFormProps> = ({ initialData, onSubmit, onCance
   // User didn't explicitly ask for auto-save, just "edit". 
 
   return (
-    <form onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
+    <form id={id} onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
       <div className="form-section">
         {/* Name input moved to header */}
         
@@ -107,16 +108,16 @@ export const SIPForm: React.FC<SIPFormProps> = ({ initialData, onSubmit, onCance
         />
       </div>
 
-      <div className="form-actions">
-        {!isInline && (
+      {!isInline && (
+        <div className="form-actions">
             <button type="button" className="btn btn-secondary" onClick={onCancel}>
                 Cancel
             </button>
-        )}
-        <button type="submit" className="btn btn-primary">
-          {isInline ? 'Update' : 'Add SIP'}
-        </button>
-      </div>
+            <button type="submit" className="btn btn-primary">
+                Add SIP
+            </button>
+        </div>
+      )}
     </form>
   );
 };

@@ -8,8 +8,10 @@ interface SliderInputProps {
   min: number;
   max: number;
   step?: number;
+  step?: number;
   unit?: string;
   error?: string;
+  variant?: 'default' | 'compact';
 }
 
 export const SliderInput: React.FC<SliderInputProps> = ({
@@ -21,6 +23,7 @@ export const SliderInput: React.FC<SliderInputProps> = ({
   step = 1,
   unit,
   error,
+  variant = 'default',
 }) => {
   const handleSliderChange = (e: ChangeEvent<HTMLInputElement>) => {
     onChange(Number(e.target.value));
@@ -33,7 +36,7 @@ export const SliderInput: React.FC<SliderInputProps> = ({
   const percentage = ((value - min) / (max - min)) * 100;
   
   return (
-    <div className="form-group slider-group">
+    <div className={`form-group slider-group ${variant}`}>
       <div className="slider-header">
         <label className="form-label">{label}</label>
         <div className="slider-input-wrapper">

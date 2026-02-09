@@ -7,6 +7,7 @@ export interface BaseCalculatorConfig {
     id: string;
     name: string;
     type: CalculatorType;
+    assetClass?: string; // e.g., 'Equity', 'Debt', 'Gold'
     createdAt: string; // ISO string
 }
 
@@ -15,6 +16,7 @@ export interface SIPConfig extends BaseCalculatorConfig {
     monthlyAmount: number;
     durationYears: number;
     expectedRatePercent: number;
+    inflationRate?: number;
 }
 
 export interface StepUpSIPConfig extends BaseCalculatorConfig {
@@ -24,6 +26,7 @@ export interface StepUpSIPConfig extends BaseCalculatorConfig {
     expectedRatePercent: number;
     stepUpPercentage: number;
     stepUpFrequency: StepUpFrequency;
+    inflationRate?: number;
 }
 
 export interface SWPConfig extends BaseCalculatorConfig {
@@ -32,6 +35,8 @@ export interface SWPConfig extends BaseCalculatorConfig {
     withdrawalAmount: number;
     frequency: SWPFrequency;
     durationYears: number;
+    expectedRatePercent: number;
+    inflationRate?: number;
 }
 
 export interface LumpsumConfig extends BaseCalculatorConfig {
@@ -39,6 +44,7 @@ export interface LumpsumConfig extends BaseCalculatorConfig {
     lumpSumAmount: number;
     expectedRatePercent: number;
     durationYears: number;
+    inflationRate?: number;
 }
 
 export interface InflationConfig extends BaseCalculatorConfig {
