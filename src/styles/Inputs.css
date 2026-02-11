@@ -1,0 +1,358 @@
+/* Existing Styles */
+.form-group {
+    margin-bottom: 0.8rem;
+    /* Reduced from 1.25rem */
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.3rem;
+    /* Reduced from 0.5rem */
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    /* Reduced */
+}
+
+.required-mark {
+    color: var(--error-color);
+    margin-left: 4px;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    /* Reduced padding */
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    /* Slightly tighter */
+    background-color: rgba(98, 0, 234, 0.03);
+    /* Subtle Purple tint */
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    /* Reduced */
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(98, 0, 234, 0.1);
+}
+
+.form-input.has-error,
+.form-select.has-error {
+    border-color: var(--error-color);
+}
+
+.error-message {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--error-color);
+    margin-top: 0.2rem;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    /* Reduced */
+}
+
+.btn {
+    padding: 0.5rem 1.2rem;
+    /* Reduced */
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: 1px solid transparent;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(98, 0, 234, 0.2);
+}
+
+/* Slider Styles */
+/* Slider Input */
+.slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.2rem;
+}
+
+.slider-group.compact {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0;
+    width: 100%;
+}
+
+.slider-group.compact .slider-header {
+    margin-bottom: 0;
+    width: auto;
+    min-width: 80px;
+    order: 2;
+    /* Value on the right */
+}
+
+.slider-group.compact .form-label {
+    display: none;
+}
+
+.slider-group.compact .slider-track-wrapper {
+    flex: 1;
+    order: 1;
+    /* Track on the left */
+    min-width: 0;
+    /* Allow shrinking */
+}
+
+/* Ensure header items (label if visible) are hidden or managed */
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.slider-header .form-label {
+    margin-bottom: 0;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.slider-input-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: rgba(98, 0, 234, 0.04);
+    /* Match bg */
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.2rem 0.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    min-width: 70px;
+    transition: all 0.2s;
+}
+
+.slider-input-wrapper:focus-within {
+    background-color: white;
+    box-shadow: 0 0 0 2px var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.slider-number-input {
+    border: none;
+    background: transparent;
+    padding: 0;
+    text-align: right;
+    width: 100%;
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1rem;
+    /* Reduced */
+    font-family: inherit;
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.slider-number-input:focus {
+    outline: none;
+}
+
+.slider-number-input::-webkit-outer-spin-button,
+.slider-number-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.slider-unit {
+    margin-left: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.slider-track-wrapper {
+    position: relative;
+    height: 24px;
+    /* Reduced from 30px */
+    display: flex;
+    align-items: center;
+}
+
+.form-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    /* Reduced from 6px */
+    border-radius: 3px;
+    background: #e0e0e0;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    transition: background 0.2s;
+}
+
+/* No dark theme block needed */
+
+.form-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    /* Reduced from 20px */
+    height: 16px;
+    /* Reduced from 20px */
+    border-radius: 50%;
+    background: var(--primary-color);
+    border: 2px solid white;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s, box-shadow 0.1s;
+    margin-top: 0px;
+    /* Centering fix if needed, usually auto */
+}
+
+.form-range::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 4px rgba(98, 0, 234, 0.1);
+}
+
+/* Firefox Support */
+.form-range::-moz-range-thumb {
+    width: 16px;
+    /* Reduced */
+    height: 16px;
+    /* Reduced */
+    border-radius: 50%;
+    background: var(--primary-color);
+    border: 2px solid white;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s;
+}
+
+.form-range::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 4px rgba(98, 0, 234, 0.1);
+}
+
+[data-theme='dark'] .slider-input-wrapper {
+    background-color: rgba(59, 130, 246, 0.15);
+}
+
+[data-theme='dark'] .slider-input-wrapper:focus-within {
+    background-color: rgba(59, 130, 246, 0.25);
+}
+
+/* Toggle Group (Segmented Control) */
+.toggle-group-container {
+    display: flex;
+    background-color: rgba(98, 0, 234, 0.04);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 2px;
+    /* Reduced from 4px to match height */
+    gap: 2px;
+}
+
+.toggle-group-item {
+    flex: 1;
+    padding: 0.3rem 0.6rem;
+    /* Reduced padding */
+    /* Reduced padding */
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    /* Reduced font size */
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    white-space: nowrap;
+    /* Prevent wrap */
+}
+
+.toggle-group-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--text-primary);
+}
+
+.toggle-group-item.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+}
+
+[data-theme='dark'] .toggle-group-container {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='dark'] .toggle-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive Form Row */
+.form-row-responsive {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: end;
+    /* Removed margin-bottom to match original layout */
+}
+
+/* Mobile Optimizations for Inputs */
+@media (max-width: 900px) {
+    .toggle-group-container {
+        width: 100%;
+        display: flex;
+    }
+
+    .toggle-group-item {
+        flex: 1;
+        /* Distribute space evenly */
+        padding: 0.6rem 0.2rem;
+        /* Reduce side padding to fit text */
+        text-align: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        /* Slightly smaller text */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Stack form row on mobile */
+    .form-row-responsive {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+}

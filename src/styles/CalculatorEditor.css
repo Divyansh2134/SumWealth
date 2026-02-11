@@ -1,0 +1,381 @@
+.calculator-editor {
+    display: flex;
+    gap: 0;
+    /* Removed gap as panels have padding */
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: none;
+    /* User wants cleaner look, maybe rely on parent container shadow? Or keep it subtle. Let's keep it but maybe lighter. */
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    min-height: 350px;
+    /* Reduced height */
+}
+
+.editor-left-panel {
+    flex: 1;
+    padding: 1.5rem;
+    /* Reduced padding */
+    border-right: none;
+    /* Removed border */
+    overflow-y: auto;
+}
+
+.editor-right-panel {
+    width: 320px;
+    /* Slightly narrower */
+    background-color: var(--bg-secondary);
+    padding: 1.5rem;
+    /* Reduced padding */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-left: none;
+    /* Removed border */
+}
+
+/* Asset Header */
+/* Internal Header */
+/* Internal Header */
+.editor-internal-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 1rem;
+    height: 36px;
+}
+
+.editor-asset-badge-small {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    font-weight: 800;
+    /* Extra Bold */
+    color: var(--primary-color);
+    /* Rich Purple Text */
+    background-color: transparent;
+    /* No Background */
+    padding: 0;
+    border-radius: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    /* More spacing for text-only look */
+    z-index: 2;
+}
+
+.editor-name-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.editor-name-input {
+    width: auto;
+    min-width: 150px;
+    max-width: 60%;
+    text-align: center;
+    border: none;
+    /* No line */
+    border-radius: 20px;
+    background-color: var(--bg-primary);
+    /* Slight contrast */
+    font-size: 1rem;
+    /* Smaller font */
+    font-weight: 600;
+    /* Regular weight */
+    color: var(--text-primary);
+    padding: 0.4rem 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    /* Subtle shadow container */
+    transition: all 0.2s;
+}
+
+.editor-name-input:focus {
+    outline: none;
+    box-shadow: 0 4px 12px rgba(98, 0, 234, 0.15);
+    background-color: white;
+}
+
+.editor-name-input:hover {
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Category Tabs */
+.editor-category-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-bottom: none;
+    /* Removed border */
+    padding-bottom: 0;
+}
+
+.editor-category-tab {
+    padding: 0.4rem 0.8rem;
+    background: rgba(98, 0, 234, 0.04);
+    /* Subtle Purple for inactive */
+    /* Give distinct background instead of border */
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.editor-category-tab:hover {
+    background-color: rgba(98, 0, 234, 0.05);
+}
+
+.editor-category-tab.active {
+    color: white;
+    background-color: var(--primary-color);
+    /* Rich Purple */
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(98, 0, 234, 0.3);
+    /* Rich Shadow */
+    border-color: var(--primary-color);
+}
+
+/* Toggles */
+.editor-toggles {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5rem;
+    gap: 1.5rem;
+    padding: 0.5rem 0 0 0;
+    /* Reduced padding */
+    margin-top: 0.5rem;
+    border-top: none;
+    /* Removed border */
+    flex-wrap: wrap;
+}
+
+.toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: none;
+    padding: 0;
+    border: none;
+}
+
+.toggle-label {
+    font-size: 0.9rem;
+    /* Reduced font size */
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Pill Switch */
+.pill-switch {
+    background: rgba(98, 0, 234, 0.04);
+    /* Subtle Purple for inactive */
+    border: 1px solid transparent;
+    /* No border for clean look, or subtle purple border? User said 'subtle purple' */
+    border-radius: 50px;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    /* Subtle shadow for depth */
+}
+
+.pill-switch:hover {
+    background-color: rgba(98, 0, 234, 0.1);
+    /* Darker purple on hover */
+    color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.pill-switch.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 10px rgba(98, 0, 234, 0.3);
+}
+
+.toggle-block {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding-top: 0;
+    /* Removed border-top lines */
+}
+
+.toggle-row-inline {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: nowrap;
+    /* Prevent wrapping to stop expansion */
+    width: 100%;
+}
+
+.inline-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    animation: slideInLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Modifier for controls inside inline container to prevent layout shifts */
+.inline-controls .form-group {
+    margin-bottom: 0 !important;
+}
+
+/* Material Switch Removed/Legacy */
+
+/* Graph */
+.graph-placeholder.circular-graph {
+    background: transparent;
+    border: none;
+    height: auto;
+    flex: 1;
+    /* Fill available vertical space */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Vertically Center */
+}
+
+/* Reusing Pie Chart Mock but making it smaller */
+.pie-chart-mock {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent-color) 0% 70%, var(--bg-primary) 70% 100%);
+    position: relative;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.pie-chart-mock::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    background-color: var(--bg-secondary);
+    border-radius: 50%;
+}
+
+/* Responsive */
+/* Footer for Update Button */
+.editor-footer {
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    /* Default Desktop: Right Aligned */
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .calculator-editor {
+        flex-direction: column;
+        width: 100%;
+        max-width: 100%;
+        /* Prevent overflow */
+        box-sizing: border-box;
+    }
+
+    .editor-left-panel {
+        border-right: none;
+        border-bottom: none;
+        width: 100%;
+        padding: 1.5rem 1rem;
+        box-sizing: border-box;
+    }
+
+    .editor-right-panel {
+        width: 100%;
+        border-left: none;
+        padding: 1rem;
+        min-height: auto;
+        background: transparent;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-sizing: border-box;
+    }
+
+    /* Center Update Button on Mobile */
+    .editor-footer {
+        justify-content: center;
+        margin-top: 1rem;
+    }
+
+    /* Show Graph below editor on Mobile */
+    .editor-right-panel h4,
+    .editor-right-panel .graph-placeholder {
+        display: flex;
+    }
+
+    .editor-right-panel {
+        background-color: var(--bg-secondary);
+        border-radius: 0 0 12px 12px;
+        margin-top: 0;
+    }
+
+    /* Stacked Layout for Toggles (3 Rows) */
+    .toggle-row-inline {
+        flex-direction: column;
+        /* Stack Pill above controls */
+        align-items: stretch;
+        gap: 0.8rem;
+        width: 100%;
+    }
+
+    .pill-switch {
+        width: 100%;
+        justify-content: center;
+        /* Center text in pill */
+        text-align: center;
+    }
+
+    .inline-controls {
+        flex-direction: column;
+        /* Stack Slider and Frequency vertically */
+        align-items: stretch;
+        width: 100%;
+        margin-top: 0;
+        padding-left: 0;
+        border-left: none;
+        gap: 0.8rem;
+        animation: none;
+    }
+
+    /* Ensure children inside inline-controls take full width */
+    .inline-controls>div {
+        width: 100% !important;
+        min-width: 0 !important;
+        /* Override inline min-width */
+        flex: none !important;
+    }
+}
