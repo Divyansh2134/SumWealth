@@ -1,5 +1,7 @@
 .tab-row-container {
     width: 100%;
+    /* Removed max-width to prevent chopped edges on large screens */
+    margin: 0;
     background-color: var(--bg-primary);
     border-bottom: 1px solid var(--border-color);
     position: sticky;
@@ -18,24 +20,34 @@
     padding: 0 1rem;
     box-sizing: border-box;
     position: relative;
-    justify-content: center;
-    /* Center the tabs group by default */
+    /* justify-content: center; Removed to allow scroll area to grow */
 }
 
+/* 
+ * The scroll area now acts as the flex container for items AND the add button.
+ * It needs to be styled to support sticky positioning of the last child.
+ */
 .tab-scroll-area {
     display: flex;
     overflow-x: auto;
     scrollbar-width: none;
-    /* Firefox */
     -ms-overflow-style: none;
-    /* IE/Edge */
-    padding-right: 3rem;
-    /* Space for absolute add button */
     height: 100%;
     align-items: center;
     gap: 0.5rem;
-    width: auto;
+    width: 100%;
+    /* Take full width */
     max-width: 100%;
+    padding-right: 0;
+    /* Removed padding-right to allow content to flow under the sticky button's mask if needed, 
+       but we want the sticky button to cover it. */
+}
+
+/* Center items when there is enough space */
+.tab-scroll-area::before,
+.tab-scroll-area::after {
+    content: '';
+    margin: auto;
 }
 
 .tab-scroll-area::-webkit-scrollbar {
@@ -57,7 +69,6 @@
     font-size: 0.9rem;
     height: 36px;
     flex-shrink: 0;
-    /* Don't shrink tabs */
 }
 
 .tab-item:hover {
@@ -94,14 +105,38 @@
     background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Add Button Wrapper */
+/* Add Button Wrapper - Now inside scroll area */
+/* Add Button Wrapper - Now inside scroll area */
 .add-btn-wrapper {
-    position: absolute;
-    right: 1rem;
+    position: sticky;
+    right: 0;
     display: flex;
     align-items: center;
     z-index: 91;
     height: 100%;
+    padding-left: 1rem;
+    /* Gap between tabs and button */
+    padding-right: 1rem;
+    /* Right padding for the container */
+    /* background/mask moved to ::before to avoid trapping fixed children */
+    flex-shrink: 0;
+    isolation: isolate;
+    /* Create new stacking context for z-index -1 child */
+}
+
+.add-btn-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-primary);
+    mask-image: linear-gradient(to right, transparent, black 1rem);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 1rem);
+    box-shadow: -12px 0 15px -5px var(--bg-primary);
+    z-index: -1;
+    pointer-events: none;
 }
 
 .sticky-add-btn {

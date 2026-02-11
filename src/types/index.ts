@@ -9,7 +9,9 @@ export interface BaseCalculatorConfig {
     type: CalculatorType;
     assetClass?: string; // e.g., 'Equity', 'Debt', 'Gold'
     createdAt: string; // ISO string
+    isNew?: boolean;
 }
+
 
 export interface SIPConfig extends BaseCalculatorConfig {
     type: 'SIP';
@@ -69,3 +71,12 @@ export type CalculatorAction =
     | { type: 'ADD_CALCULATOR'; payload: CalculatorConfig }
     | { type: 'UPDATE_CALCULATOR'; payload: CalculatorConfig }
     | { type: 'DELETE_CALCULATOR'; payload: string };
+
+// Toast Types
+export type ToastType = 'success' | 'error' | 'info';
+
+export interface Toast {
+    id: string;
+    message: string;
+    type: ToastType;
+}

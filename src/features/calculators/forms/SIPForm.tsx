@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useCurrency } from '../../../context/CurrencyContext';
 import type { SIPConfig } from '../../../types';
 import { SliderInput } from '../../../components/SliderInput';
 import { validatePositiveNumber, validateRange } from '../../../utils/validation';
@@ -12,6 +13,8 @@ interface SIPFormProps {
 }
 
 export const SIPForm: React.FC<SIPFormProps> = ({ initialData, onSubmit, onCancel, isInline, id }) => {
+  const { currency } = useCurrency(); // Consume context
+
   const [formData, setFormData] = useState({
     monthlyAmount: initialData?.monthlyAmount || 5000,
     durationYears: initialData?.durationYears || 10,
@@ -90,7 +93,7 @@ export const SIPForm: React.FC<SIPFormProps> = ({ initialData, onSubmit, onCance
           min={500}
           max={100000}
           step={500}
-          unit="₹"
+          unit={currency.symbol}
           error={errors.monthlyAmount}
         />
 

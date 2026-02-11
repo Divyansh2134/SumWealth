@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useCurrency } from '../../../context/CurrencyContext';
 import type { SWPConfig, SWPFrequency } from '../../../types';
 import { ToggleGroup } from '../../../components/Inputs';
 import { SliderInput } from '../../../components/SliderInput';
@@ -13,6 +14,7 @@ interface SWPFormProps {
 }
 
 export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCancel, isInline, id }) => {
+  const { currency } = useCurrency(); // Consume context
   const [formData, setFormData] = useState({
     lumpSumAmount: initialData?.lumpSumAmount || 500000,
     withdrawalAmount: initialData?.withdrawalAmount || 5000,
@@ -88,7 +90,7 @@ export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCance
           min={10000}
           max={10000000}
           step={10000}
-          unit="₹"
+          unit={currency.symbol}
           error={errors.lumpSumAmount}
         />
 
@@ -100,7 +102,7 @@ export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCance
             min={500}
             max={100000}
             step={500}
-            unit="₹"
+            unit={currency.symbol}
             error={errors.withdrawalAmount}
           />
           <ToggleGroup

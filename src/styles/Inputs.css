@@ -94,6 +94,14 @@
     box-shadow: 0 4px 12px rgba(98, 0, 234, 0.2);
 }
 
+.btn-primary:disabled {
+    background-color: #e0e0e0;
+    color: #9e9e9e;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
 /* Slider Styles */
 /* Slider Input */
 .slider-group {

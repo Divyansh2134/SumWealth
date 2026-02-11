@@ -22,8 +22,8 @@
 }
 
 .editor-right-panel {
-    width: 320px;
-    /* Slightly narrower */
+    width: 420px;
+    /* Increased width */
     background-color: var(--bg-secondary);
     padding: 1.5rem;
     /* Reduced padding */
@@ -96,7 +96,7 @@
 .editor-name-input:focus {
     outline: none;
     box-shadow: 0 4px 12px rgba(98, 0, 234, 0.15);
-    background-color: white;
+    background-color: var(--card-bg);
 }
 
 .editor-name-input:hover {

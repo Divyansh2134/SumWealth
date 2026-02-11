@@ -1,6 +1,7 @@
 .header {
     height: var(--header-height);
-    background-color: var(--bg-primary);
+    height: var(--header-height);
+    background-color: var(--card-bg);
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
@@ -56,11 +57,14 @@
     top: 100%;
     right: 0;
     margin-top: 0.5rem;
-    background-color: var(--bg-card);
+    background-color: var(--card-bg);
+    /* Solid background */
+    backdrop-filter: none;
+    /* Remove any glassy effect */
     border: 1px solid var(--border-color);
     border-radius: 0.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    min-width: 150px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
     display: flex;
     flex-direction: column;
     padding: 0.5rem;

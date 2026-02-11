@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useCurrency } from '../../../context/CurrencyContext';
 import type { LumpsumConfig } from '../../../types';
 import { SliderInput } from '../../../components/SliderInput';
 import { validatePositiveNumber, validateRange } from '../../../utils/validation';
@@ -12,6 +13,7 @@ interface LumpsumFormProps {
 }
 
 export const LumpsumForm: React.FC<LumpsumFormProps> = ({ initialData, onSubmit, onCancel, isInline, id }) => {
+  const { currency } = useCurrency(); // Consume context
   const [formData, setFormData] = useState({
     lumpSumAmount: initialData?.lumpSumAmount || 100000,
     expectedRatePercent: initialData?.expectedRatePercent || 12,
@@ -81,7 +83,7 @@ export const LumpsumForm: React.FC<LumpsumFormProps> = ({ initialData, onSubmit,
           min={5000}
           max={10000000}
           step={5000}
-          unit="₹"
+          unit={currency.symbol}
           error={errors.lumpSumAmount}
         />
 

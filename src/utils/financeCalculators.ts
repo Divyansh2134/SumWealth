@@ -35,7 +35,7 @@ export const calculateLumpsum = (
     const maturityValue = principal * Math.pow(1 + r, n);
     const totalInterest = maturityValue - principal;
 
-    let inflationAdjustedValue = getInflationAdjustedValue(maturityValue, inflationRatePercent, years);
+    const inflationAdjustedValue = getInflationAdjustedValue(maturityValue, inflationRatePercent, years);
 
     return {
         totalInvested: principal,
@@ -70,7 +70,7 @@ export const calculateSIP = (
     const maturityValue = monthlyAmount * ((Math.pow(1 + i, n) - 1) / i) * (1 + i);
     const totalInvested = monthlyAmount * n;
 
-    let inflationAdjustedValue = getInflationAdjustedValue(maturityValue, inflationRatePercent, years);
+    const inflationAdjustedValue = getInflationAdjustedValue(maturityValue, inflationRatePercent, years);
 
     return {
         totalInvested,
@@ -119,7 +119,7 @@ export const calculateStepUpSIP = (
         }
     }
 
-    let inflationAdjustedValue = getInflationAdjustedValue(currentCorpus, inflationRatePercent, years);
+    const inflationAdjustedValue = getInflationAdjustedValue(currentCorpus, inflationRatePercent, years);
 
     return {
         totalInvested,
@@ -171,7 +171,7 @@ export const calculateSWP = (
         }
     }
 
-    let inflationAdjustedValue = getInflationAdjustedValue(currentCorpus, inflationRatePercent, years);
+    const inflationAdjustedValue = getInflationAdjustedValue(currentCorpus, inflationRatePercent, years);
 
     return {
         totalInvested: lumpsumAmount,
@@ -201,11 +201,38 @@ const getMonthsFromFrequency = (freq: Frequency): number => {
     }
 };
 
-export const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-IN', {
+// Update formatCurrency to accept optional currency/locale, but default to INR/en-IN for backward compatibility if needed, 
+// though we should aim to pass them in.
+export const formatCurrency = (amount: number, currencyCode: string = 'INR', locale: string = 'en-IN'): string => {
+    return new Intl.NumberFormat(locale, {
         style: 'currency',
-        currency: 'INR',
+        currency: currencyCode,
         maximumFractionDigits: 0
+    }).format(amount);
+};
+
+/**
+ * Formats large numbers into compact notation (e.g., 1.5M, 2Cr)
+ * Handles Indian Number System for INR locale, otherwise standard International.
+ */
+export const formatCompactNumber = (amount: number, currencyCode: string = 'INR', locale: string = 'en-IN'): string => {
+    // Special handling for Indian System (Lakhs/Crores) if locale is en-IN
+    if (locale === 'en-IN') {
+        if (amount >= 10000000) { // 1 Crore
+            return `₹${(amount / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr`;
+        }
+        if (amount >= 100000) { // 1 Lakh
+            return `₹${(amount / 100000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} L`;
+        }
+    }
+
+    // Standard Compact Notation for other locales
+    return new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: currencyCode,
+        notation: "compact",
+        compactDisplay: "short",
+        maximumFractionDigits: 1
     }).format(amount);
 };
 

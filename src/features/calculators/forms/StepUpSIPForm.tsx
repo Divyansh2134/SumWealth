@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useCurrency } from '../../../context/CurrencyContext';
 import type { StepUpSIPConfig, StepUpFrequency } from '../../../types';
 import { ToggleGroup } from '../../../components/Inputs';
 import { SliderInput } from '../../../components/SliderInput';
@@ -13,6 +14,8 @@ interface StepUpSIPFormProps {
 }
 
 export const StepUpSIPForm: React.FC<StepUpSIPFormProps> = ({ initialData, onSubmit, onCancel, isInline, id }) => {
+  const { currency } = useCurrency(); // Consume context
+  
   const [formData, setFormData] = useState({
     initialMonthlyAmount: initialData?.initialMonthlyAmount || 5000,
     durationYears: initialData?.durationYears || 10,
@@ -80,7 +83,7 @@ export const StepUpSIPForm: React.FC<StepUpSIPFormProps> = ({ initialData, onSub
             min={500}
             max={100000}
             step={500}
-            unit="₹"
+            unit={currency.symbol}
             error={errors.initialMonthlyAmount}
         />
 

@@ -8,7 +8,7 @@ interface SliderInputProps {
   min: number;
   max: number;
   step?: number;
-  step?: number;
+
   unit?: string;
   error?: string;
   variant?: 'default' | 'compact';

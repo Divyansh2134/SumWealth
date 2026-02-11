@@ -91,9 +91,9 @@
 
 .viewfinder-grid {
     display: grid;
-    /* Allow more items per row */
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1rem;
+    /* Ultra Tighter grid */
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.8rem;
     width: 100%;
     margin-bottom: 1.5rem;
 }
@@ -125,29 +125,37 @@
 
 /* Viewfinder Styles Merged Up */
 
+/* Ultra Compact Cards */
 .mini-card {
     background-color: var(--bg-primary);
     border: 1px solid var(--border-color);
-    /* Restore subtle border for definition */
-    border-radius: 8px;
-    /* Smaller radius */
-    padding: 0.8rem;
+    border-radius: 12px;
+    padding: 10px 14px;
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 4px;
     position: relative;
     opacity: 1;
-    /* Remove dimming */
+    min-width: 0;
+    /* Enable text truncation */
+}
+
+.viewfinder-grid {
+    display: grid;
+    /* Tighter grid */
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.8rem;
+    width: 100%;
+    margin-bottom: 1.5rem;
 }
 
 .mini-card:hover {
     background-color: var(--bg-secondary);
-    border-color: var(--border-color-hover);
+    border-color: var(--primary-color);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    /* Restore shadow on hover */
 }
 
 .mini-card.highlighted {
@@ -159,18 +167,38 @@
 .mini-card-header {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2px;
+}
+
+.mini-card-title-row {
+    width: 100%;
+    margin-right: 4px;
+    display: flex;
     align-items: center;
-    margin-bottom: 0;
+    gap: 6px;
+}
+
+.mini-card-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .mini-card-type {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     font-weight: 700;
     text-transform: uppercase;
     color: var(--text-secondary);
     background: rgba(0, 0, 0, 0.05);
-    padding: 2px 6px;
-    border-radius: 4px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
 }
 
 .mini-card.highlighted .mini-card-type {
@@ -184,10 +212,12 @@
     color: var(--text-secondary);
     font-size: 1.2rem;
     cursor: pointer;
-    padding: 0;
+    padding: 2px;
     line-height: 0.5;
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: all 0.2s;
+    margin-top: -2px;
+    margin-right: -4px;
 }
 
 .mini-card:hover .mini-delete,
@@ -197,39 +227,51 @@
 
 .mini-delete:hover {
     color: var(--error-color);
+    background-color: rgba(255, 0, 0, 0.05);
+    border-radius: 50%;
 }
 
-.mini-card-name {
-    font-size: 0.9rem;
-    /* Slightly larger */
-    font-weight: 600;
-    color: var(--text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.mini-card-details {
+.mini-card-body {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    font-size: 0.8rem;
-    /* Clearer font */
-    color: var(--text-secondary);
+    gap: 2px;
 }
 
-.mini-card-details div:first-child {
-    font-size: 0.85rem;
-    font-weight: 600;
+.mini-main-value {
+    font-size: 1.1rem;
+    font-weight: 700;
     color: var(--text-primary);
-    /* Darker text */
+    letter-spacing: -0.5px;
+    line-height: 1.2;
 }
 
-.mini-sub {
+.mini-unit {
     font-size: 0.75rem;
-    opacity: 1;
-    /* Remove transparency */
+    font-weight: 500;
     color: var(--text-secondary);
+    margin-left: 1px;
+}
+
+.mini-footer-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.mini-dot {
+    font-size: 0.6rem;
+    opacity: 0.5;
+}
+
+.mini-asset {
+    color: var(--primary-color);
+    font-weight: 600;
+    background: rgba(98, 0, 234, 0.05);
+    padding: 0 4px;
+    border-radius: 4px;
 }
 
 /* Modal */
@@ -334,7 +376,7 @@
     /* Hide Viewfinder on Mobile */
     /* Show Viewfinder with horizontal scroll on Mobile */
     .viewfinder-section {
-        display: block;
+        display: none;
         margin-top: 1.5rem;
     }
 
@@ -387,4 +429,26 @@
     .calculate-all-btn {
         max-width: 100%;
     }
+}
+
+@keyframes pulse-animation {
+    0% {
+        box-shadow: 0 0 0 0 rgba(98, 0, 234, 0.7);
+        transform: scale(1);
+    }
+
+    50% {
+        box-shadow: 0 0 0 10px rgba(98, 0, 234, 0);
+        transform: scale(1.02);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(98, 0, 234, 0);
+        transform: scale(1);
+    }
+}
+
+.pulse-animation {
+    animation: pulse-animation 2s infinite;
+    background: linear-gradient(135deg, var(--primary-color), #7c4dff);
 }

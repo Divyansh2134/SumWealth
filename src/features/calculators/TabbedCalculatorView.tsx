@@ -4,13 +4,17 @@ import type { CalculatorConfig, SIPConfig } from '../../types';
 import { CalculatorEditor } from './CalculatorEditor';
 import { Header } from '../../components/Header';
 import { TabRow } from '../../components/TabRow/TabRow';
+import { formatCompactNumber } from '../../utils/financeCalculators';
 import '../../styles/TabbedCalculatorView.css';
 import { v4 as uuidv4 } from 'uuid';
 
 import { PlanSummaryReport } from './PlanSummaryReport';
 
+import { useCurrency } from '../../context/CurrencyContext';
+
 export const TabbedCalculatorView: React.FC = () => {
     const { calculators, dispatch } = useCalculator();
+    const { currency } = useCurrency(); // Consume context
     const [activeTabId, setActiveTabId] = useState<string | null>(null);
     const [showSummary, setShowSummary] = useState(false);
     const [snapshotCalculators, setSnapshotCalculators] = useState<CalculatorConfig[]>([]);
@@ -43,7 +47,8 @@ export const TabbedCalculatorView: React.FC = () => {
                 createdAt: new Date().toISOString(),
                 monthlyAmount: 5000,
                 durationYears: 10,
-                expectedRatePercent: 12
+                expectedRatePercent: 12,
+                isNew: true
             };
             handleCreateCalculator(newConfig);
         }
@@ -67,17 +72,33 @@ export const TabbedCalculatorView: React.FC = () => {
         }
     };
 
+    // Auto-Scroll Ref
+    const summaryRef = React.useRef<HTMLDivElement>(null);
+
+    // Recalculate Reminder State
+    const [hasCalculated, setHasCalculated] = useState(false);
+    
+    // Check if current calculators differ from snapshot
+    // We use JSON.stringify for deep comparison which is acceptable for this data size
+    const isDirty = React.useMemo(() => {
+        if (!hasCalculated) return false;
+        return JSON.stringify(calculators) !== JSON.stringify(snapshotCalculators);
+    }, [calculators, snapshotCalculators, hasCalculated]);
+
     const handleCalculateAll = () => {
         setSnapshotCalculators([...calculators]);
         setShowSummary(true);
+        setHasCalculated(true);
+        
+        // Timeout to allow DOM to update if showing summary for first time
+        setTimeout(() => {
+            summaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
     };
 
     const activeCalculator = calculators.find(c => c.id === activeTabId);
 
-    // Helper to safely access inflationRate
-    const getInflationRate = (calc: CalculatorConfig) => {
-        return 'inflationRate' in calc ? calc.inflationRate : undefined;
-    };
+
 
     return (
         <div className="dashboard-container">
@@ -121,39 +142,84 @@ export const TabbedCalculatorView: React.FC = () => {
                             {calculators.map(calc => (
                                 <div key={calc.id} className={`mini-card ${activeTabId === calc.id ? 'highlighted' : ''}`} onClick={() => { setActiveTabId(calc.id); }}>
                                     <div className="mini-card-header">
-                                        <span className="mini-card-type">{calc.type}</span>
+                                        <div className="mini-card-title-row">
+                                            {calc.name && <div className="mini-card-name" title={calc.name}>{calc.name}</div>}
+                                            <span className="mini-card-type">{calc.type}</span>
+                                        </div>
                                         <button className="mini-delete" onClick={(e) => handleDeleteClick(calc.id, e)}>×</button>
                                     </div>
-                                    {calc.name && <div className="mini-card-name">{calc.name}</div>}
-                                    <div className="mini-card-details">
-                                        {calc.assetClass && <div className="mini-sub" style={{ color: 'var(--accent-color)' }}>{calc.assetClass}</div>}
-
+                                    
+                                    <div className="mini-card-body">
                                         {calc.type === 'SIP' && (
                                             <>
-                                                <div>₹{calc.monthlyAmount}/mo</div>
-                                                <div className="mini-sub">{calc.durationYears} yrs @ {calc.expectedRatePercent}%</div>
+                                                <div className="mini-main-value">
+                                                    {formatCompactNumber(calc.monthlyAmount, currency.code, currency.locale)}<span className="mini-unit">/mo</span>
+                                                </div>
+                                                <div className="mini-footer-row">
+                                                    <span>{calc.durationYears}y</span>
+                                                    <span className="mini-dot">•</span>
+                                                    <span>{calc.expectedRatePercent}%</span>
+                                                    {calc.assetClass && (
+                                                        <>
+                                                            <span className="mini-dot">•</span>
+                                                            <span className="mini-asset">{calc.assetClass}</span>
+                                                        </>
+                                                    )}
+                                                </div>
                                             </>
                                         )}
                                         {calc.type === 'StepUpSIP' && (
                                             <>
-                                                <div>₹{calc.initialMonthlyAmount}/mo</div>
-                                                <div className="mini-sub">Step {calc.stepUpPercentage}%</div>
+                                                <div className="mini-main-value">
+                                                    {formatCompactNumber(calc.initialMonthlyAmount, currency.code, currency.locale)}<span className="mini-unit">/mo</span>
+                                                </div>
+                                                <div className="mini-footer-row">
+                                                    <span>+{calc.stepUpPercentage}%</span>
+                                                    <span className="mini-dot">•</span>
+                                                    <span>{calc.durationYears}y</span>
+                                                    {calc.assetClass && (
+                                                        <>
+                                                            <span className="mini-dot">•</span>
+                                                            <span className="mini-asset">{calc.assetClass}</span>
+                                                        </>
+                                                    )}
+                                                </div>
                                             </>
                                         )}
                                         {calc.type === 'SWP' && (
                                             <>
-                                                <div>Yield ₹{calc.withdrawalAmount}/{calc.frequency.charAt(0)}</div>
-                                                <div className="mini-sub">from ₹{calc.lumpSumAmount}</div>
+                                                <div className="mini-main-value">
+                                                    {formatCompactNumber(calc.withdrawalAmount, currency.code, currency.locale)}<span className="mini-unit">/{calc.frequency.charAt(0).toLowerCase()}</span>
+                                                </div>
+                                                <div className="mini-footer-row">
+                                                    <span style={{opacity: 0.8}}>from</span>
+                                                    <span>{formatCompactNumber(calc.lumpSumAmount, currency.code, currency.locale)}</span>
+                                                    {calc.assetClass && (
+                                                        <>
+                                                            <span className="mini-dot">•</span>
+                                                            <span className="mini-asset">{calc.assetClass}</span>
+                                                        </>
+                                                    )}
+                                                </div>
                                             </>
                                         )}
                                         {calc.type === 'Lumpsum' && (
                                             <>
-                                                <div>₹{calc.lumpSumAmount}</div>
-                                                <div className="mini-sub">{calc.durationYears} yrs @ {calc.expectedRatePercent}%</div>
+                                                <div className="mini-main-value">
+                                                    {formatCompactNumber(calc.lumpSumAmount, currency.code, currency.locale)}
+                                                </div>
+                                                <div className="mini-footer-row">
+                                                    <span>{calc.durationYears}y</span>
+                                                    <span className="mini-dot">•</span>
+                                                    <span>{calc.expectedRatePercent}%</span>
+                                                    {calc.assetClass && (
+                                                        <>
+                                                            <span className="mini-dot">•</span>
+                                                            <span className="mini-asset">{calc.assetClass}</span>
+                                                        </>
+                                                    )}
+                                                </div>
                                             </>
-                                        )}
-                                        {getInflationRate(calc) !== undefined && (
-                                            <div className="mini-sub">Inflation: {getInflationRate(calc)}%</div>
                                         )}
                                     </div>
                                 </div>
@@ -166,8 +232,11 @@ export const TabbedCalculatorView: React.FC = () => {
             {/* Calculate All Button */}
             {calculators.length > 0 && (
                 <div className="action-footer-section">
-                    <button className="btn btn-primary calculate-all-btn" onClick={handleCalculateAll}>
-                        Calculate All Plans
+                    <button 
+                        className={`btn btn-primary calculate-all-btn ${isDirty ? 'pulse-animation' : ''}`} 
+                        onClick={handleCalculateAll}
+                    >
+                        {isDirty ? 'Update Plan' : 'Calculate All Plans'}
                     </button>
                 </div>
             )}
@@ -177,7 +246,7 @@ export const TabbedCalculatorView: React.FC = () => {
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <h3>Delete Calculator?</h3>
-                        <p>Are you sure you want to remove this calculator from your plan? This action cannot be undone.</p>
+                        <p>Are you sure you want to remove this calculator from your plan?</p>
                         <div className="modal-actions">
                             <button className="btn btn-secondary" onClick={() => setDeleteConfirmationId(null)}>Cancel</button>
                             <button className="btn btn-danger" onClick={confirmDelete}>Delete</button>
@@ -187,9 +256,11 @@ export const TabbedCalculatorView: React.FC = () => {
             )}
 
             {showSummary && (
-                <PlanSummaryReport
-                    calculators={snapshotCalculators}
-                />
+                <div ref={summaryRef}>
+                    <PlanSummaryReport
+                        calculators={snapshotCalculators}
+                    />
+                </div>
             )}
         </div>
     );

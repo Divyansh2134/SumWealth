@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography } from '@mui/material';
-import type { CalculatorConfig, SIPConfig, StepUpSIPConfig, SWPConfig, LumpsumConfig } from '../../types';
-import { calculateSIP, calculateStepUpSIP, calculateLumpsum, calculateSWP, formatCurrency, getYearlyProjection } from '../../utils/financeCalculators';
+import type { CalculatorConfig, SIPConfig, StepUpSIPConfig, SWPConfig, LumpsumConfig, InflationConfig } from '../../types';
+import { useCurrency } from '../../context/CurrencyContext';
+import { calculateSIP, calculateStepUpSIP, calculateLumpsum, calculateSWP, formatCurrency, formatCompactNumber, getYearlyProjection } from '../../utils/financeCalculators';
 import type { ProjectionResult } from '../../utils/financeCalculators';
 import '../../styles/PlanSummaryReport.css';
 
@@ -33,29 +34,52 @@ const COLORS = [
     '#6366f1', // Indigo
 ];
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+// Note: To access context in Tooltip, we might need to pass currency as prop or use hook inside if Recharts allows.
+// Recharts Tooltip renders as a separate component. Let's make it a proper component.
+
+interface TooltipPayload {
+    name: string;
+    value: number;
+    color: string;
+}
+
+interface CustomTooltipProps {
+    active?: boolean;
+    payload?: TooltipPayload[];
+    label?: string;
+}
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
+    const { currency } = useCurrency(); // Should work if inside provider
+
     if (active && payload && payload.length) {
         const activePayload = payload
-            .filter((entry: any) => entry.value > 0)
-            .sort((a: any, b: any) => b.value - a.value);
+            .filter((entry) => entry.value > 0)
+            .sort((a, b) => b.value - a.value);
 
         if (activePayload.length === 0) return null;
 
         return (
-            <div className="custom-chart-tooltip">
-                <div className="tooltip-title">Year {label}</div>
+            <div className="custom-chart-tooltip" style={{ 
+                backgroundColor: 'var(--card-bg)', 
+                border: '1px solid var(--border-color)',
+                padding: '12px',
+                borderRadius: '12px',
+                boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+            }}>
+                <div className="tooltip-title" style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '12px' }}>Year {label}</div>
                 <div className="tooltip-items">
-                    {activePayload.map((entry: any, index: number) => (
-                        <div key={index} className="tooltip-item">
-                            <span style={{ color: '#64748b', fontWeight: 500 }}>{entry.name}: </span>
-                            <span style={{ color: '#1e293b', fontWeight: 600 }}>{formatCurrency(entry.value)}</span>
+                    {activePayload.map((entry, index: number) => (
+                        <div key={index} className="tooltip-item" style={{ marginBottom: '4px' }}>
+                            <span style={{ color: 'var(--text-secondary)', fontWeight: 500, marginRight: '8px' }}>{entry.name}: </span>
+                            <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{formatCurrency(entry.value, currency.code, currency.locale)}</span>
                         </div>
                     ))}
                 </div>
-                <div className="tooltip-footer">
-                    <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#64748b' }}>total:</span>
-                    <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#1e293b' }}>
-                        {formatCurrency(activePayload.reduce((acc: number, curr: any) => acc + curr.value, 0))}
+                <div className="tooltip-footer" style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--border-color)' }}>
+                    <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-secondary)', marginRight: '8px' }}>total:</span>
+                    <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                        {formatCurrency(activePayload.reduce((acc: number, curr) => acc + curr.value, 0), currency.code, currency.locale)}
                     </span>
                 </div>
             </div>
@@ -65,15 +89,17 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculators }) => {
+    const { currency } = useCurrency(); // Consume context
+
     const reportData = useMemo(() => {
         // Detect global inflation rate if present
-        const globalInflationCalc = calculators.find(c => c.type === 'Inflation') as any;
+        const globalInflationCalc = calculators.find(c => c.type === 'Inflation') as InflationConfig | undefined;
         const globalInflationRate = globalInflationCalc?.rate;
 
         // 1. Unified Calculation Phase
         const calculatedResults = calculators.map(calc => {
             // Priority: Plan-specific inflation > Global inflation calculator
-            const inflation = (calc as any).inflationRate ?? globalInflationRate;
+            const inflation = 'inflationRate' in calc ? calc.inflationRate : globalInflationRate;
 
             let result: ProjectionResult;
             switch (calc.type) {
@@ -103,11 +129,11 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
 
             return {
                 id: calc.id,
-                name: calc.name || 'Untitled Plan',
+                name: calc.name || `${calc.type} ${calculators.filter(c => c.type === calc.type).indexOf(calc) + 1}`,
                 asset: calc.assetClass || 'General',
                 invested: result.totalInvested,
                 gained: result.totalInterest,
-                years: 'durationYears' in calc ? (calc as any).durationYears : 0,
+                years: 'durationYears' in calc ? (calc as SIPConfig | StepUpSIPConfig | SWPConfig | LumpsumConfig).durationYears : 0,
                 total: result.maturityValue,
                 realValue: result.inflationAdjustedValue ?? result.maturityValue
             };
@@ -134,22 +160,23 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
         const colorMap: Record<string, string> = {};
 
         calculators.forEach((calc, idx) => {
-            if ('durationYears' in calc && (calc as any).durationYears > maxDuration) {
-                maxDuration = (calc as any).durationYears;
+            if ('durationYears' in calc && calc.durationYears > maxDuration) {
+                maxDuration = calc.durationYears;
             }
             colorMap[calc.id] = COLORS[idx % COLORS.length];
         });
 
-        const yearlyDataMap = new Map<number, any>();
+        const yearlyDataMap = new Map<number, { year: number } & Record<string, number>>();
         for (let y = 1; y <= maxDuration; y++) {
             yearlyDataMap.set(y, { year: y });
         }
 
         calculators.forEach(calc => {
             const projections = getYearlyProjection(calc);
+            const fallbackName = calc.name || `${calc.type} ${calculators.filter(c => c.type === calc.type).indexOf(calc) + 1}`;
             projections.forEach(p => {
                 const existing = yearlyDataMap.get(p.year) || { year: p.year };
-                existing[calc.name || 'Untitled'] = p.value;
+                existing[fallbackName] = p.value;
                 yearlyDataMap.set(p.year, existing);
             });
         });
@@ -180,26 +207,31 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
 
                             {/* 1. Bar Chart Section */}
                             <div className="chart-wrapper">
-                                <div className="chart-container-resizable" style={{ height: 'max(400px, 40vh)', minHeight: 300, width: '100%' }}>
+                                <div className="chart-container-resizable" style={{ height: 'max(400px, 40vh)', minHeight: 300, width: '100%', outline: 'none' }}>
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
-                                            <XAxis dataKey="name" stroke="#64748b" fontSize={10} tick={{ fontSize: 10 }} />
+                                            <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={10} tick={{ fontSize: 10 }} />
                                             <YAxis
-                                                stroke="#64748b"
+                                                stroke="var(--text-secondary)"
                                                 fontSize={10}
                                                 tick={{ fontSize: 10 }}
-                                                tickFormatter={(val) => {
-                                                    if (val >= 10000000) return `₹${(val / 10000000).toFixed(1)}Cr`;
-                                                    if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
-                                                    return `₹${val}`;
-                                                }}
+                                                tickFormatter={(val) => formatCompactNumber(val, currency.code, currency.locale)}
                                             />
                                             <Tooltip
                                                 cursor={{ fill: 'transparent' }}
-                                                contentStyle={{ borderRadius: '12px', border: 'none', backgroundColor: '#fff', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', fontSize: '12px' }}
-                                                formatter={(val: number | string | undefined) => formatCurrency(Number(val) || 0)}
+                                                contentStyle={{ 
+                                                    borderRadius: '12px', 
+                                                    border: '1px solid var(--border-color)', 
+                                                    backgroundColor: 'var(--card-bg)', 
+                                                    color: 'var(--text-primary)',
+                                                    boxShadow: '0 10px 25px rgba(0,0,0,0.1)', 
+                                                    fontSize: '12px' 
+                                                }}
+                                                labelStyle={{ color: 'var(--text-primary)' }}
+                                                wrapperStyle={{ outline: 'none' }}
+                                                formatter={(val: number | string | undefined) => formatCurrency(Number(val) || 0, currency.code, currency.locale)}
                                             />
-                                            <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
+                                            <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', color: 'var(--text-secondary)' }} />
                                             <Bar dataKey="Invested" stackId="a" fill="#3b82f6" radius={[0, 0, 4, 4]} maxBarSize={60} />
                                             <Bar dataKey="Gained" stackId="a" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={60} />
                                         </BarChart>
@@ -210,24 +242,30 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
                             {/* 2. Yearly Growth Chart */}
                             <div className="chart-wrapper">
                                 <Typography className="section-title">Portfolio Growth Over Time</Typography>
-                                <div className="chart-container-resizable" style={{ height: 'max(350px, 35vh)', minHeight: 300, width: '100%' }}>
+                                <div className="chart-container-resizable" style={{ height: 'max(350px, 35vh)', minHeight: 300, width: '100%', outline: 'none' }}>
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={yearlyData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
-                                            <XAxis dataKey="year" stroke="#64748b" fontSize={10} tick={{ fontSize: 10 }} />
+                                            <XAxis dataKey="year" stroke="var(--text-secondary)" fontSize={10} tick={{ fontSize: 10 }} />
                                             <YAxis
-                                                stroke="#64748b"
+                                                stroke="var(--text-secondary)"
                                                 fontSize={10}
                                                 tick={{ fontSize: 10 }}
-                                                tickFormatter={(val) => {
-                                                    if (val >= 10000000) return `₹${(val / 10000000).toFixed(1)}Cr`;
-                                                    if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
-                                                    return `₹${val}`;
-                                                }}
+                                                tickFormatter={(val) => formatCompactNumber(val, currency.code, currency.locale)}
                                             />
-                                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,0,0,0.05)' }} wrapperStyle={{ outline: 'none', pointerEvents: 'none' }} />
-                                            <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
+                                            <Tooltip 
+                                                content={<CustomTooltip />} 
+                                                cursor={{ fill: 'rgba(0,0,0,0.05)' }} 
+                                                wrapperStyle={{ outline: 'none' }} 
+                                            />
+                                            <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', color: 'var(--text-secondary)' }} />
                                             {calculators.map((calc) => (
-                                                <Bar key={calc.id} dataKey={calc.name || 'Untitled'} stackId="growth" fill={colorMap[calc.id]} maxBarSize={40} />
+                                                <Bar 
+                                                    key={calc.id} 
+                                                    dataKey={calc.name || `${calc.type} ${calculators.filter(c => c.type === calc.type).indexOf(calc) + 1}`} 
+                                                    stackId="growth" 
+                                                    fill={colorMap[calc.id]} 
+                                                    maxBarSize={40} 
+                                                />
                                             ))}
                                         </BarChart>
                                     </ResponsiveContainer>
@@ -238,45 +276,46 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
                             <Box sx={{ p: 0 }}>
                                 <Typography className="section-title">Plan Breakdown Details</Typography>
                                 <TableContainer component={Paper} elevation={0} sx={{
-                                    bgcolor: 'transparent',
-                                    border: '1px solid #f1f5f9',
+                                    bgcolor: 'var(--card-bg)',
+                                    backgroundImage: 'none',
+                                    border: '1px solid var(--border-color)',
                                     borderRadius: '16px',
                                     overflowX: 'auto',
                                     '&::-webkit-scrollbar': { height: '6px' },
-                                    '&::-webkit-scrollbar-thumb': { backgroundColor: '#e2e8f0', borderRadius: '10px' }
+                                    '&::-webkit-scrollbar-thumb': { backgroundColor: 'var(--border-color)', borderRadius: '10px' }
                                 }}>
                                     <Table sx={{ minWidth: { xs: 600, sm: 650 } }}>
-                                        <TableHead sx={{ bgcolor: '#f8fafc' }}>
+                                        <TableHead sx={{ bgcolor: 'var(--bg-secondary)' }}>
                                             <TableRow>
-                                                <TableCell sx={{ fontWeight: 'bold', color: '#64748b', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Name</TableCell>
-                                                <TableCell sx={{ fontWeight: 'bold', color: '#64748b', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Asset</TableCell>
-                                                <TableCell align="right" sx={{ fontWeight: 'bold', color: '#64748b', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Invested</TableCell>
-                                                <TableCell align="center" sx={{ fontWeight: 'bold', color: '#64748b', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Years</TableCell>
-                                                <TableCell align="right" sx={{ fontWeight: 'bold', color: '#64748b', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Total</TableCell>
-                                                <TableCell align="right" sx={{ fontWeight: 'bold', color: '#64748b', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Real Value</TableCell>
+                                                <TableCell sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Name</TableCell>
+                                                <TableCell sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Asset</TableCell>
+                                                <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Invested</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Years</TableCell>
+                                                <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Total</TableCell>
+                                                <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Real Value</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                             {tableData.map((row) => (
-                                                <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { bgcolor: '#f8fafc' } }}>
-                                                    <TableCell sx={{ fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{row.name}</TableCell>
+                                                <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { bgcolor: 'var(--bg-secondary)' } }}>
+                                                    <TableCell sx={{ fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: 'var(--text-primary)' }}>{row.name}</TableCell>
                                                     <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
-                                                        <Box component="span" sx={{ px: 2, py: 0.5, borderRadius: '9999px', fontSize: { xs: '10px', sm: '12px' }, fontWeight: 'semibold', bgcolor: '#eff6ff', color: '#2563eb' }}>
+                                                        <Box component="span" sx={{ px: 2, py: 0.5, borderRadius: '9999px', fontSize: { xs: '10px', sm: '12px' }, fontWeight: 'semibold', bgcolor: 'rgba(98, 0, 234, 0.1)', color: 'var(--primary-color)' }}>
                                                             {row.asset}
                                                         </Box>
                                                     </TableCell>
-                                                    <TableCell align="right" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{formatCurrency(row.invested)}</TableCell>
-                                                    <TableCell align="center" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{row.years}</TableCell>
-                                                    <TableCell align="right" sx={{ fontWeight: 'bold', color: '#10b981', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{formatCurrency(row.total)}</TableCell>
-                                                    <TableCell align="right" sx={{ color: '#3b82f6', fontWeight: 500, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{formatCurrency(row.realValue)}</TableCell>
+                                                    <TableCell align="right" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: 'var(--text-primary)' }}>{formatCurrency(row.invested, currency.code, currency.locale)}</TableCell>
+                                                    <TableCell align="center" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: 'var(--text-primary)' }}>{row.years}</TableCell>
+                                                    <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--success-color)', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{formatCurrency(row.total, currency.code, currency.locale)}</TableCell>
+                                                    <TableCell align="right" sx={{ color: 'var(--primary-color)', fontWeight: 500, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{formatCurrency(row.realValue, currency.code, currency.locale)}</TableCell>
                                                 </TableRow>
                                             ))}
-                                            <TableRow sx={{ bgcolor: '#f8fafc', '& td': { fontWeight: '800', borderTop: '2px solid #e2e8f0', fontSize: { xs: '0.75rem', sm: '0.875rem' } } }}>
-                                                <TableCell colSpan={2} sx={{ color: '#475569' }}>Total Portfolio</TableCell>
-                                                <TableCell align="right" sx={{ color: '#334155' }}>{formatCurrency(totals.invested)}</TableCell>
-                                                <TableCell align="center" sx={{ color: '#94a3b8' }}>—</TableCell>
-                                                <TableCell align="right" sx={{ color: '#059669' }}>{formatCurrency(totals.total)}</TableCell>
-                                                <TableCell align="right" sx={{ color: '#2563eb' }}>{formatCurrency(totals.realValue)}</TableCell>
+                                            <TableRow sx={{ bgcolor: 'var(--bg-secondary)', '& td': { fontWeight: '800', borderTop: '2px solid var(--border-color)', fontSize: { xs: '0.75rem', sm: '0.875rem' } } }}>
+                                                <TableCell colSpan={2} sx={{ color: 'var(--text-primary)' }}>Total Portfolio</TableCell>
+                                                <TableCell align="right" sx={{ color: 'var(--text-primary)' }}>{formatCurrency(totals.invested, currency.code, currency.locale)}</TableCell>
+                                                <TableCell align="center" sx={{ color: 'var(--text-secondary)' }}>—</TableCell>
+                                                <TableCell align="right" sx={{ color: 'var(--success-color)' }}>{formatCurrency(totals.total, currency.code, currency.locale)}</TableCell>
+                                                <TableCell align="right" sx={{ color: 'var(--primary-color)' }}>{formatCurrency(totals.realValue, currency.code, currency.locale)}</TableCell>
                                             </TableRow>
                                         </TableBody>
                                     </Table>
