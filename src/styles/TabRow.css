@@ -2,13 +2,24 @@
     width: 100%;
     background-color: var(--bg-primary);
     border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: center;
-    /* Center the scroll container */
     position: sticky;
     top: var(--header-height);
     z-index: 90;
     height: 60px;
+}
+
+.tab-row-inner {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    box-sizing: border-box;
+    position: relative;
+    justify-content: center;
+    /* Center the tabs group by default */
 }
 
 .tab-scroll-area {
@@ -18,14 +29,13 @@
     /* Firefox */
     -ms-overflow-style: none;
     /* IE/Edge */
-    padding: 0 1rem;
+    padding-right: 3rem;
+    /* Space for absolute add button */
     height: 100%;
     align-items: center;
     gap: 0.5rem;
-
-    /* Centering Logic */
     width: auto;
-    max-width: var(--container-max-width);
+    max-width: 100%;
 }
 
 .tab-scroll-area::-webkit-scrollbar {
@@ -86,11 +96,10 @@
 
 /* Add Button Wrapper */
 .add-btn-wrapper {
-    position: relative;
-    /* For dropdown absolute positioning */
+    position: absolute;
+    right: 1rem;
     display: flex;
     align-items: center;
-    padding-left: 0.5rem;
     z-index: 91;
     height: 100%;
 }

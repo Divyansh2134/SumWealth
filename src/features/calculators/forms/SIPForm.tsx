@@ -21,7 +21,9 @@ export const SIPForm: React.FC<SIPFormProps> = ({ initialData, onSubmit, onCance
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (field: keyof typeof formData, value: string | number) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    const newData = { ...formData, [field]: value };
+    setFormData(newData);
+
     // Clear specific error
     if (errors[field]) {
       setErrors((prev) => {
@@ -30,13 +32,20 @@ export const SIPForm: React.FC<SIPFormProps> = ({ initialData, onSubmit, onCance
         return newErrors;
       });
     }
+
+    // Real-time update
+    onSubmit({
+      monthlyAmount: Number(newData.monthlyAmount),
+      durationYears: Number(newData.durationYears),
+      expectedRatePercent: Number(newData.expectedRatePercent),
+    });
   };
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    
+
     // Name is optional now, will auto-generate if empty on submit
-    
+
     const amountError = validatePositiveNumber(Number(formData.monthlyAmount), 'Monthly Amount');
     if (amountError) newErrors.monthlyAmount = amountError;
 
@@ -73,49 +82,49 @@ export const SIPForm: React.FC<SIPFormProps> = ({ initialData, onSubmit, onCance
     <form id={id} onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
       <div className="form-section">
         {/* Name input moved to header */}
-        
+
         <SliderInput
-            label="Monthly Investment"
-            value={formData.monthlyAmount}
-            onChange={(val) => handleChange('monthlyAmount', val)}
-            min={500}
-            max={100000}
-            step={500}
-            unit="₹"
-            error={errors.monthlyAmount}
+          label="Monthly Investment"
+          value={formData.monthlyAmount}
+          onChange={(val) => handleChange('monthlyAmount', val)}
+          min={500}
+          max={100000}
+          step={500}
+          unit="₹"
+          error={errors.monthlyAmount}
         />
 
         <SliderInput
-            label="Expected Return Rate"
-            value={formData.expectedRatePercent}
-            onChange={(val) => handleChange('expectedRatePercent', val)}
-            min={1}
-            max={30}
-            step={0.1}
-            unit="%"
-            error={errors.expectedRatePercent}
+          label="Expected Return Rate"
+          value={formData.expectedRatePercent}
+          onChange={(val) => handleChange('expectedRatePercent', val)}
+          min={1}
+          max={30}
+          step={0.1}
+          unit="%"
+          error={errors.expectedRatePercent}
         />
 
         <SliderInput
-            label="Time Period"
-            value={formData.durationYears}
-            onChange={(val) => handleChange('durationYears', val)}
-            min={1}
-            max={50}
-            step={1}
-            unit="Years"
-            error={errors.durationYears}
+          label="Time Period"
+          value={formData.durationYears}
+          onChange={(val) => handleChange('durationYears', val)}
+          min={1}
+          max={50}
+          step={1}
+          unit="Years"
+          error={errors.durationYears}
         />
       </div>
 
       {!isInline && (
         <div className="form-actions">
-            <button type="button" className="btn btn-secondary" onClick={onCancel}>
-                Cancel
-            </button>
-            <button type="submit" className="btn btn-primary">
-                Add SIP
-            </button>
+          <button type="button" className="btn btn-secondary" onClick={onCancel}>
+            Cancel
+          </button>
+          <button type="submit" className="btn btn-primary">
+            Add SIP
+          </button>
         </div>
       )}
     </form>

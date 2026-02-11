@@ -42,63 +42,62 @@ export const TabRow: React.FC<TabRowProps> = ({
 
     return (
         <div className="tab-row-container">
-            <div className="tab-scroll-area" ref={scrollContainerRef}>
-                {calculators.map(calc => (
+            <div className="tab-row-inner">
+                <div className="tab-scroll-area" ref={scrollContainerRef}>
+                    {calculators.map(calc => (
+                        <button
+                            key={calc.id}
+                            className={`tab-item ${activeTabId === calc.id ? 'active' : ''}`}
+                            onClick={() => onTabClick(calc.id)}
+                        >
+                            {calc.name || `${calc.type} ${calculators.indexOf(calc) + 1}`}
+                            {activeTabId === calc.id && (
+                                <span
+                                    className="tab-remove"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onDeleteClick(calc.id, e);
+                                    }}
+                                >
+                                    ×
+                                </span>
+                            )}
+                        </button>
+                    ))}
+
+                    {isDraft && (
+                        <button className="tab-item active draft-tab">
+                            New {draftType} (Draft)
+                        </button>
+                    )}
+                </div>
+
+                {/* Add Button Inside Inner to stay within 1200px bounds but positioned absolutely */}
+                <div className="add-btn-wrapper" ref={dropdownRef}>
                     <button
-                        key={calc.id}
-                        className={`tab-item ${activeTabId === calc.id ? 'active' : ''}`}
-                        onClick={() => onTabClick(calc.id)}
+                        className={`sticky-add-btn ${isDropdownOpen ? 'active' : ''}`}
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        aria-label="Add Calculator"
                     >
-                        {calc.name || `${calc.type} ${calculators.indexOf(calc) + 1}`}
-                        {activeTabId === calc.id && (
-                            <span 
-                                className="tab-remove"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onDeleteClick(calc.id, e);
-                                }}
-                            >
-                                ×
-                            </span>
-                        )}
+                        +
                     </button>
-                ))}
-                
-                {isDraft && (
-                    <button className="tab-item active draft-tab">
-                        New {draftType} (Draft)
-                    </button>
-                )}
-
-
-                {/* sticky-add-wrapper moved out */}
-            </div>
-
-            {/* Add Button Outside Scroll Area to avoid overflow clipping */}
-            <div className="add-btn-wrapper" ref={dropdownRef}>
-                <button 
-                    className={`sticky-add-btn ${isDropdownOpen ? 'active' : ''}`}
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    aria-label="Add Calculator"
-                >
-                    +
-                </button>
-                {isDropdownOpen && (
-                    <div className="asset-dropdown">
-                        {ASSET_CLASSES.map(asset => (
-                            <button
-                                key={asset.id}
-                                className="asset-dropdown-item"
-                                onClick={() => {
-                                    onAddClick(asset.id);
-                                    setIsDropdownOpen(false);
-                                }}
-                            >
-                                <span className="asset-dropdown-name">{asset.name}</span>
-                            </button>
-                        ))}
-                    </div>
-                )}
+                    {isDropdownOpen && (
+                        <div className="asset-dropdown">
+                            {ASSET_CLASSES.map(asset => (
+                                <button
+                                    key={asset.id}
+                                    className="asset-dropdown-item"
+                                    onClick={() => {
+                                        onAddClick(asset.id);
+                                        setIsDropdownOpen(false);
+                                    }}
+                                >
+                                    <span className="asset-dropdown-name">{asset.name}</span>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

@@ -21,7 +21,9 @@ export const LumpsumForm: React.FC<LumpsumFormProps> = ({ initialData, onSubmit,
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (field: keyof typeof formData, value: string | number) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    const newData = { ...formData, [field]: value };
+    setFormData(newData);
+
     if (errors[field]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -29,6 +31,13 @@ export const LumpsumForm: React.FC<LumpsumFormProps> = ({ initialData, onSubmit,
         return newErrors;
       });
     }
+
+    // Real-time update
+    onSubmit({
+      lumpSumAmount: Number(newData.lumpSumAmount),
+      expectedRatePercent: Number(newData.expectedRatePercent),
+      durationYears: Number(newData.durationYears),
+    });
   };
 
   const validate = () => {
@@ -64,38 +73,38 @@ export const LumpsumForm: React.FC<LumpsumFormProps> = ({ initialData, onSubmit,
     <form id={id} onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
       <div className="form-section">
         {/* Name input moved to header */}
-        
+
         <SliderInput
-            label="Lumpsum Amount"
-            value={formData.lumpSumAmount}
-            onChange={(val) => handleChange('lumpSumAmount', val)}
-            min={5000}
-            max={10000000}
-            step={5000}
-            unit="₹"
-            error={errors.lumpSumAmount}
+          label="Lumpsum Amount"
+          value={formData.lumpSumAmount}
+          onChange={(val) => handleChange('lumpSumAmount', val)}
+          min={5000}
+          max={10000000}
+          step={5000}
+          unit="₹"
+          error={errors.lumpSumAmount}
         />
 
         <SliderInput
-            label="Expected Return Rate"
-            value={formData.expectedRatePercent}
-            onChange={(val) => handleChange('expectedRatePercent', val)}
-            min={1}
-            max={30}
-            step={0.1}
-            unit="%"
-            error={errors.expectedRatePercent}
+          label="Expected Return Rate"
+          value={formData.expectedRatePercent}
+          onChange={(val) => handleChange('expectedRatePercent', val)}
+          min={1}
+          max={30}
+          step={0.1}
+          unit="%"
+          error={errors.expectedRatePercent}
         />
 
         <SliderInput
-            label="Time Period"
-            value={formData.durationYears}
-            onChange={(val) => handleChange('durationYears', val)}
-            min={1}
-            max={50}
-            step={1}
-            unit="Years"
-            error={errors.durationYears}
+          label="Time Period"
+          value={formData.durationYears}
+          onChange={(val) => handleChange('durationYears', val)}
+          min={1}
+          max={50}
+          step={1}
+          unit="Years"
+          error={errors.durationYears}
         />
 
 
@@ -103,12 +112,12 @@ export const LumpsumForm: React.FC<LumpsumFormProps> = ({ initialData, onSubmit,
 
       {!isInline && (
         <div className="form-actions">
-            <button type="button" className="btn btn-secondary" onClick={onCancel}>
-                Cancel
-            </button>
-            <button type="submit" className="btn btn-primary">
-                Add Lumpsum
-            </button>
+          <button type="button" className="btn btn-secondary" onClick={onCancel}>
+            Cancel
+          </button>
+          <button type="submit" className="btn btn-primary">
+            Add Lumpsum
+          </button>
         </div>
       )}
     </form>

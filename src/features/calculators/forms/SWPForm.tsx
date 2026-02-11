@@ -24,7 +24,9 @@ export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCance
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (field: keyof typeof formData, value: string | number) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    const newData = { ...formData, [field]: value };
+    setFormData(newData);
+
     if (errors[field]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -32,6 +34,15 @@ export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCance
         return newErrors;
       });
     }
+
+    // Real-time update
+    onSubmit({
+      lumpSumAmount: Number(newData.lumpSumAmount),
+      withdrawalAmount: Number(newData.withdrawalAmount),
+      frequency: newData.frequency,
+      durationYears: Number(newData.durationYears),
+      expectedRatePercent: Number(newData.expectedRatePercent),
+    });
   };
 
   const validate = () => {
@@ -69,71 +80,71 @@ export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCance
     <form id={id} onSubmit={handleSubmit} noValidate className={isInline ? 'inline-form' : ''}>
       <div className="form-section">
         {/* Name input moved to header */}
-        
+
         <SliderInput
-            label="Total Investment"
-            value={formData.lumpSumAmount}
-            onChange={(val) => handleChange('lumpSumAmount', val)}
-            min={10000}
-            max={10000000}
-            step={10000}
-            unit="₹"
-            error={errors.lumpSumAmount}
+          label="Total Investment"
+          value={formData.lumpSumAmount}
+          onChange={(val) => handleChange('lumpSumAmount', val)}
+          min={10000}
+          max={10000000}
+          step={10000}
+          unit="₹"
+          error={errors.lumpSumAmount}
         />
 
         <div className="form-row-responsive">
-            <SliderInput
-                label="Withdrawal Amount"
-                value={formData.withdrawalAmount}
-                onChange={(val) => handleChange('withdrawalAmount', val)}
-                min={500}
-                max={100000}
-                step={500}
-                unit="₹"
-                error={errors.withdrawalAmount}
-            />
-            <ToggleGroup
-                value={formData.frequency}
-                onChange={(val) => handleChange('frequency', val)}
-                options={[
-                    { value: 'monthly', label: 'Mo' },
-                    { value: 'quarterly', label: 'Qt' },
-                    { value: 'annually', label: 'Yr' },
-                ]}
-            />
+          <SliderInput
+            label="Withdrawal Amount"
+            value={formData.withdrawalAmount}
+            onChange={(val) => handleChange('withdrawalAmount', val)}
+            min={500}
+            max={100000}
+            step={500}
+            unit="₹"
+            error={errors.withdrawalAmount}
+          />
+          <ToggleGroup
+            value={formData.frequency}
+            onChange={(val) => handleChange('frequency', val)}
+            options={[
+              { value: 'monthly', label: 'Mo' },
+              { value: 'quarterly', label: 'Qt' },
+              { value: 'annually', label: 'Yr' },
+            ]}
+          />
         </div>
 
         <SliderInput
-            label="Expected Return (p.a)"
-            value={formData.expectedRatePercent}
-            onChange={(val) => handleChange('expectedRatePercent', val)}
-            min={1}
-            max={30}
-            step={0.5}
-            unit="%"
-            error={errors.expectedRatePercent}
+          label="Expected Return (p.a)"
+          value={formData.expectedRatePercent}
+          onChange={(val) => handleChange('expectedRatePercent', val)}
+          min={1}
+          max={30}
+          step={0.5}
+          unit="%"
+          error={errors.expectedRatePercent}
         />
 
         <SliderInput
-            label="Time Period"
-            value={formData.durationYears}
-            onChange={(val) => handleChange('durationYears', val)}
-            min={1}
-            max={30}
-            step={1}
-            unit="Years"
-            error={errors.durationYears}
+          label="Time Period"
+          value={formData.durationYears}
+          onChange={(val) => handleChange('durationYears', val)}
+          min={1}
+          max={30}
+          step={1}
+          unit="Years"
+          error={errors.durationYears}
         />
       </div>
 
       {!isInline && (
         <div className="form-actions">
-            <button type="button" className="btn btn-secondary" onClick={onCancel}>
-                Cancel
-            </button>
-            <button type="submit" className="btn btn-primary">
-                Add SWP
-            </button>
+          <button type="button" className="btn btn-secondary" onClick={onCancel}>
+            Cancel
+          </button>
+          <button type="submit" className="btn btn-primary">
+            Add SWP
+          </button>
         </div>
       )}
     </form>

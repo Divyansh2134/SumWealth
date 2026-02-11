@@ -1,0 +1,239 @@
+/* Plan Summary Report Styles */
+.plan-summary-container {
+    width: 100%;
+    margin-top: 1rem;
+    animation: slideInBottom 0.5s ease-out;
+}
+
+@media (min-width: 640px) {
+    .plan-summary-container {
+        margin-top: 2rem;
+    }
+}
+
+@keyframes slideInBottom {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.summary-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+    .summary-header {
+        margin-bottom: 1.5rem;
+    }
+}
+
+.summary-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    font-family: "Computer Modern Sans", sans-serif;
+}
+
+@media (min-width: 640px) {
+    .summary-header h2 {
+        font-size: 1.5rem;
+    }
+}
+
+.summary-card {
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 640px) {
+    .summary-card {
+        border-radius: 1rem;
+    }
+}
+
+.summary-card-content {
+    padding: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .summary-card-content {
+        padding: 1.5rem;
+    }
+}
+
+.summary-section-spacer {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+@media (min-width: 640px) {
+    .summary-section-spacer {
+        gap: 3rem;
+    }
+}
+
+.chart-wrapper {
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 640px) {
+    .chart-wrapper {
+        padding: 1.5rem;
+    }
+}
+
+.chart-container-resizable {
+    resize: y;
+    overflow: auto;
+    background-color: #f8fafc;
+    border-radius: 0.5rem;
+    border: 1px solid #f1f5f9;
+    padding: 0.5rem;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (min-width: 640px) {
+    .chart-container-resizable {
+        padding: 1rem;
+    }
+}
+
+.section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.75rem;
+    text-align: center;
+}
+
+@media (min-width: 640px) {
+    .section-title {
+        font-size: 1.125rem;
+        margin-bottom: 1rem;
+    }
+}
+
+.breakdown-table-container {
+    background-color: transparent;
+    padding: 0;
+}
+
+/* Tooltip Styles */
+.custom-chart-tooltip {
+    background-color: white;
+    padding: 0.75rem;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border-radius: 1rem;
+    overflow: hidden;
+    outline: none;
+    min-width: 160px;
+    z-index: 50;
+    position: relative;
+}
+
+@media (min-width: 640px) {
+    .custom-chart-tooltip {
+        padding: 1.25rem;
+        border-radius: 1.75rem;
+        min-width: 200px;
+    }
+}
+
+.tooltip-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+@media (min-width: 640px) {
+    .tooltip-title {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+}
+
+.tooltip-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+@media (min-width: 640px) {
+    .tooltip-items {
+        gap: 0.375rem;
+    }
+}
+
+.tooltip-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .tooltip-item {
+        gap: 1.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+.tooltip-footer {
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@media (min-width: 640px) {
+    .tooltip-footer {
+        margin-top: 1rem;
+        padding-top: 0.75rem;
+    }
+}
+
+/* Dark Theme Support */
+[data-theme='dark'] .summary-card {
+    background-color: #141414;
+    border-color: #2d2d2d;
+}
+
+[data-theme='dark'] .chart-wrapper {
+    background-color: #141414;
+    border-color: #2d2d2d;
+}
+
+[data-theme='dark'] .chart-container-resizable {
+    background-color: #0c0c0c;
+    border-color: #2d2d2d;
+}
+
+[data-theme='dark'] .summary-header h2,
+[data-theme='dark'] .section-title,
+[data-theme='dark'] .tooltip-title {
+    color: #e5e7eb;
+}
