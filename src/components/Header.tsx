@@ -3,6 +3,8 @@ import { useTheme } from '../context/ThemeContext';
 import { useCurrency } from '../context/CurrencyContext';
 import '../styles/Header.css';
 
+const SHOW_HAMBURGER_MENU = false; // Set to true to show the menu
+
 export const Header: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { currency, setCurrency, availableCurrencies } = useCurrency();
@@ -55,26 +57,28 @@ export const Header: React.FC = () => {
           >
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
-          <div className="hamburger-wrapper" style={{ position: 'relative' }}>
-            <button
-              className="icon-btn hamburger-btn"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Menu"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 12H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M3 6H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-            {isMenuOpen && (
-              <div className="menu-dropdown">
-                <button onClick={() => alert('Profile Clicked')}>Profile</button>
-                <button onClick={() => alert('Settings Clicked')}>Settings</button>
-                <button onClick={() => alert('Help Clicked')}>Help</button>
-              </div>
-            )}
-          </div>
+          {SHOW_HAMBURGER_MENU && (
+            <div className="hamburger-wrapper" style={{ position: 'relative' }}>
+              <button
+                className="icon-btn hamburger-btn"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label="Menu"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 12H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M3 6H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              {isMenuOpen && (
+                <div className="menu-dropdown">
+                  <button onClick={() => alert('Profile Clicked')}>Profile</button>
+                  <button onClick={() => alert('Settings Clicked')}>Settings</button>
+                  <button onClick={() => alert('Help Clicked')}>Help</button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </header>
