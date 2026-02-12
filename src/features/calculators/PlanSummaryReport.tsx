@@ -18,9 +18,11 @@ interface TableRowData {
     invested: number;
     years: number;
     total: number;
-    realValue: number;
+    realValue?: number; // Optional now
     totalWithdrawn?: number;
 }
+
+
 
 const COLORS = [
     '#3b82f6', // Blue
@@ -168,6 +170,13 @@ const GrowthTooltip: React.FC<CustomTooltipProps & { calculators: CalculatorConf
 export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculators }) => {
     const { currency } = useCurrency(); // Consume context
 
+    // Check if any active inflation settings exist
+    const hasInflation = useMemo(() => {
+        const globalInflation = calculators.some(c => c.type === 'Inflation');
+        const localInflation = calculators.some(c => 'inflationRate' in c && (c as { inflationRate?: number }).inflationRate !== undefined);
+        return globalInflation || localInflation;
+    }, [calculators]);
+
     const reportData = useMemo(() => {
         // Detect global inflation rate if present
         const globalInflationCalc = calculators.find(c => c.type === 'Inflation') as InflationConfig | undefined;
@@ -213,7 +222,7 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
                 totalWithdrawn: result.totalWithdrawn || 0,
                 years: 'durationYears' in calc ? (calc as SIPConfig | StepUpSIPConfig | SWPConfig | LumpsumConfig).durationYears : 0,
                 total: result.maturityValue,
-                realValue: result.inflationAdjustedValue ?? result.maturityValue,
+                realValue: result.inflationAdjustedValue, // Can be undefined
                 type: calc.type
             };
         });
@@ -287,7 +296,7 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
         const totals = tableData.reduce((acc, curr) => ({
             invested: acc.invested + curr.invested,
             total: acc.total + curr.total,
-            realValue: acc.realValue + curr.realValue,
+            realValue: acc.realValue + (curr.realValue ?? curr.total), // If no real value, use nominal for total sum consistency
             totalWithdrawn: acc.totalWithdrawn + (curr.totalWithdrawn || 0)
         }), { invested: 0, total: 0, realValue: 0, totalWithdrawn: 0 } as { invested: number; total: number; realValue: number; totalWithdrawn: number });
 
@@ -389,6 +398,9 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
                                                 <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Invested</TableCell>
                                                 <TableCell align="center" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Years</TableCell>
                                                 <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Withdrawn</TableCell>
+                                                {hasInflation && (
+                                                    <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Real Value</TableCell>
+                                                )}
                                                 <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Current Value</TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -408,6 +420,11 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
                                                     <TableCell align="right" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: (row.totalWithdrawn || 0) > 0 ? '#ff6d00' : 'var(--text-secondary)', py: 1.5 }}>
                                                         {(row.totalWithdrawn || 0) > 0 ? formatCurrency(row.totalWithdrawn!, currency.code, currency.locale) : '-'}
                                                     </TableCell>
+                                                    {hasInflation && (
+                                                        <TableCell align="right" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: 'var(--text-primary)', py: 1.5 }}>
+                                                            {row.realValue !== undefined ? formatCurrency(row.realValue, currency.code, currency.locale) : '-'}
+                                                        </TableCell>
+                                                    )}
                                                     <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--success-color)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>
                                                         {formatCurrency(row.total, currency.code, currency.locale)}
                                                     </TableCell>
@@ -418,6 +435,9 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
                                                 <TableCell align="right" sx={{ color: 'var(--text-primary)' }}>{formatCurrency(totals.invested, currency.code, currency.locale)}</TableCell>
                                                 <TableCell align="center" sx={{ color: 'var(--text-secondary)' }}>—</TableCell>
                                                 <TableCell align="right" sx={{ color: '#ff6d00' }}>{totals.totalWithdrawn ? formatCurrency(totals.totalWithdrawn, currency.code, currency.locale) : '-'}</TableCell>
+                                                {hasInflation && (
+                                                    <TableCell align="right" sx={{ color: 'var(--text-primary)' }}>{formatCurrency(totals.realValue, currency.code, currency.locale)}</TableCell>
+                                                )}
                                                 <TableCell align="right" sx={{ color: 'var(--success-color)' }}>{formatCurrency(totals.total, currency.code, currency.locale)}</TableCell>
                                             </TableRow>
                                         </TableBody>

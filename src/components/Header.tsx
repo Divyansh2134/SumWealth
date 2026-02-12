@@ -12,7 +12,7 @@ export const Header: React.FC = () => {
   return (
     <header className="header">
       <div className="container header__content">
-        <h1 className="header__title">WealthSum</h1>
+        <h1 className="header__title">Income Planner</h1>
         <div className="header-actions">
           <div className="currency-selector" style={{ position: 'relative', marginRight: '0.5rem' }}>
             <button
