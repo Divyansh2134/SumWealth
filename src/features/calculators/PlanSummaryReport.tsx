@@ -19,6 +19,7 @@ interface TableRowData {
     years: number;
     total: number;
     realValue: number;
+    totalWithdrawn?: number;
 }
 
 const COLORS = [
@@ -37,10 +38,24 @@ const COLORS = [
 // Note: To access context in Tooltip, we might need to pass currency as prop or use hook inside if Recharts allows.
 // Recharts Tooltip renders as a separate component. Let's make it a proper component.
 
+interface ChartDataItem {
+    name?: string;
+    calcType?: string;
+    realInvested?: number;
+    Invested?: number;
+    Gained?: number;
+    Remaining?: number;
+    Withdrawn?: number;
+    year?: number;
+    [key: string]: number | string | undefined; // Allow dynamic keys
+}
+
 interface TooltipPayload {
     name: string;
     value: number;
     color: string;
+    payload?: ChartDataItem;
+    [key: string]: unknown;
 }
 
 interface CustomTooltipProps {
@@ -49,39 +64,101 @@ interface CustomTooltipProps {
     label?: string;
 }
 
-const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
-    const { currency } = useCurrency(); // Should work if inside provider
+const AssetTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
+    const { currency } = useCurrency();
 
-    if (active && payload && payload.length) {
-        const activePayload = payload
-            .filter((entry) => entry.value > 0)
-            .sort((a, b) => b.value - a.value);
-
-        if (activePayload.length === 0) return null;
+    if (active && payload && payload.length && payload[0].payload) {
+        const data = payload[0].payload;
+        const type = data.calcType;
+        const name = data.name;
 
         return (
             <div className="custom-chart-tooltip" style={{ 
                 backgroundColor: 'var(--card-bg)', 
                 border: '1px solid var(--border-color)',
-                padding: '12px',
-                borderRadius: '12px',
-                boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+                padding: '8px 12px',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
             }}>
-                <div className="tooltip-title" style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '12px' }}>Year {label}</div>
-                <div className="tooltip-items">
-                    {activePayload.map((entry, index: number) => (
-                        <div key={index} className="tooltip-item" style={{ marginBottom: '4px' }}>
-                            <span style={{ color: 'var(--text-secondary)', fontWeight: 500, marginRight: '8px' }}>{entry.name}: </span>
-                            <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{formatCurrency(entry.value, currency.code, currency.locale)}</span>
+                <div style={{ color: 'var(--text-secondary)', marginBottom: '6px', fontSize: '11px', fontWeight: 600 }}>{name}</div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>Invested:</span>
+                        <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                            {formatCurrency(Number(data.realInvested || 0), currency.code, currency.locale)}
+                        </span>
+                    </div>
+
+                    {type === 'SWP' ? (
+                        <>
+                             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
+                                <span style={{ color: 'var(--text-secondary)' }}>Withdrawn:</span>
+                                <span style={{ fontWeight: 600, color: '#ff6d00' }}>
+                                    {formatCurrency(Number(data.Withdrawn || 0), currency.code, currency.locale)}
+                                </span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
+                                <span style={{ color: 'var(--text-secondary)' }}>Remaining:</span>
+                                <span style={{ fontWeight: 600, color: '#7c4dff' }}>
+                                    {formatCurrency(Number(data.Remaining || 0), currency.code, currency.locale)}
+                                </span>
+                            </div>
+                        </>
+                    ) : (
+                         <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
+                            <span style={{ color: 'var(--text-secondary)' }}>Returns:</span>
+                            <span style={{ fontWeight: 600, color: '#10b981' }}>
+                                {formatCurrency(Number(data.Gained || 0), currency.code, currency.locale)}
+                            </span>
                         </div>
-                    ))}
+                    )}
                 </div>
-                <div className="tooltip-footer" style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--border-color)' }}>
-                    <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-secondary)', marginRight: '8px' }}>total:</span>
-                    <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                        {formatCurrency(activePayload.reduce((acc: number, curr) => acc + curr.value, 0), currency.code, currency.locale)}
-                    </span>
-                </div>
+            </div>
+        );
+    }
+    return null;
+};
+
+const GrowthTooltip: React.FC<CustomTooltipProps & { calculators: CalculatorConfig[] }> = ({ active, payload, label, calculators }) => {
+    const { currency } = useCurrency();
+
+    if (active && payload && payload.length) {
+        return (
+            <div className="custom-chart-tooltip" style={{ 
+                backgroundColor: 'var(--card-bg)', 
+                border: '1px solid var(--border-color)',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+                <div style={{ color: 'var(--text-secondary)', marginBottom: '6px', fontSize: '11px', fontWeight: 600 }}>Year {label}</div>
+                {payload.map((entry: TooltipPayload) => {
+                    const name = entry.name;
+                    // Find calculator type
+                    const calc = calculators.find(c => (c.name || `${c.type} ${calculators.filter(x => x.type === c.type).indexOf(c) + 1}`) === name);
+                    const isSWP = calc?.type === 'SWP';
+                    
+                    const withdrawnKey = `${name}_withdrawn`;
+                    // Safe access to withdrawn property from the payload object
+                    const payloadData = entry.payload || {};
+                    const withdrawn = Number(payloadData[withdrawnKey] || 0);
+
+                    return (
+                        <div key={name} style={{ marginBottom: '6px', fontSize: '12px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                                <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: entry.color }}></div>
+                                <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{name}</span>
+                            </div>
+                            <div style={{ paddingLeft: '14px', display: 'flex', flexDirection: 'column', gap: '1px', fontSize: '11px' }}>
+                                <span style={{ color: 'var(--text-secondary)' }}>Value: <strong style={{ color: 'var(--text-primary)' }}>{formatCurrency(entry.value, currency.code, currency.locale)}</strong></span>
+                                {isSWP && withdrawn > 0 && (
+                                    <span style={{ color: 'var(--text-secondary)' }}>Withdrawn: <strong style={{ color: '#ff6d00' }}>{formatCurrency(withdrawn, currency.code, currency.locale)}</strong></span>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
         );
     }
@@ -133,18 +210,37 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
                 asset: calc.assetClass || 'General',
                 invested: result.totalInvested,
                 gained: result.totalInterest,
+                totalWithdrawn: result.totalWithdrawn || 0,
                 years: 'durationYears' in calc ? (calc as SIPConfig | StepUpSIPConfig | SWPConfig | LumpsumConfig).durationYears : 0,
                 total: result.maturityValue,
-                realValue: result.inflationAdjustedValue ?? result.maturityValue
+                realValue: result.inflationAdjustedValue ?? result.maturityValue,
+                type: calc.type
             };
         });
 
-        const chartData = calculatedResults.map(res => ({
-            name: res.name,
-            Invested: res.invested,
-            Gained: res.gained,
-            Total: res.total
-        }));
+        const chartData = calculatedResults.map(res => {
+            if (res.type === 'SWP') {
+                return {
+                    name: res.name,
+                    calcType: res.type,
+                    realInvested: res.invested,
+                    Remaining: res.total,
+                    Withdrawn: res.totalWithdrawn,
+                    // Zero out others to avoid overlap in the stacked bar if they share stackId
+                    Invested: 0,
+                    Gained: 0
+                };
+            }
+            return {
+                name: res.name,
+                calcType: res.type,
+                realInvested: res.invested,
+                Invested: res.invested,
+                Gained: res.gained,
+                Remaining: 0,
+                Withdrawn: 0
+            };
+        });
 
         const tableData: TableRowData[] = calculatedResults.map(res => ({
             id: res.id,
@@ -153,7 +249,8 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
             invested: res.invested,
             years: res.years,
             total: res.total,
-            realValue: res.realValue
+            realValue: res.realValue,
+            totalWithdrawn: res.totalWithdrawn
         }));
 
         let maxDuration = 0;
@@ -177,6 +274,10 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
             projections.forEach(p => {
                 const existing = yearlyDataMap.get(p.year) || { year: p.year };
                 existing[fallbackName] = p.value;
+                // Add withdrawn data for tooltip using a specific key convention
+                if (p.withdrawn !== undefined) {
+                    existing[`${fallbackName}_withdrawn`] = p.withdrawn;
+                }
                 yearlyDataMap.set(p.year, existing);
             });
         });
@@ -186,8 +287,9 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
         const totals = tableData.reduce((acc, curr) => ({
             invested: acc.invested + curr.invested,
             total: acc.total + curr.total,
-            realValue: acc.realValue + curr.realValue
-        }), { invested: 0, total: 0, realValue: 0 });
+            realValue: acc.realValue + curr.realValue,
+            totalWithdrawn: acc.totalWithdrawn + (curr.totalWithdrawn || 0)
+        }), { invested: 0, total: 0, realValue: 0, totalWithdrawn: 0 } as { invested: number; total: number; realValue: number; totalWithdrawn: number });
 
         return { chartData, tableData, yearlyData, maxDuration, colorMap, totals };
     }, [calculators]);
@@ -219,21 +321,16 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
                                             />
                                             <Tooltip
                                                 cursor={{ fill: 'transparent' }}
-                                                contentStyle={{ 
-                                                    borderRadius: '12px', 
-                                                    border: '1px solid var(--border-color)', 
-                                                    backgroundColor: 'var(--card-bg)', 
-                                                    color: 'var(--text-primary)',
-                                                    boxShadow: '0 10px 25px rgba(0,0,0,0.1)', 
-                                                    fontSize: '12px' 
-                                                }}
-                                                labelStyle={{ color: 'var(--text-primary)' }}
+                                                content={<AssetTooltip />}
                                                 wrapperStyle={{ outline: 'none' }}
-                                                formatter={(val: number | string | undefined) => formatCurrency(Number(val) || 0, currency.code, currency.locale)}
                                             />
                                             <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', color: 'var(--text-secondary)' }} />
+                                            {/* Standard Bars */}
                                             <Bar dataKey="Invested" stackId="a" fill="#3b82f6" radius={[0, 0, 4, 4]} maxBarSize={60} />
                                             <Bar dataKey="Gained" stackId="a" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={60} />
+                                            {/* SWP Specific Bars - stackId must match if we want them in same column (they are exclusive per row anyway) */}
+                                            <Bar dataKey="Remaining" stackId="a" fill="#7c4dff" radius={[0, 0, 4, 4]} maxBarSize={60} />
+                                            <Bar dataKey="Withdrawn" stackId="a" fill="#ff6d00" radius={[4, 4, 0, 0]} maxBarSize={60} />
                                         </BarChart>
                                     </ResponsiveContainer>
                                 </div>
@@ -253,7 +350,7 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
                                                 tickFormatter={(val) => formatCompactNumber(val, currency.code, currency.locale)}
                                             />
                                             <Tooltip 
-                                                content={<CustomTooltip />} 
+                                                content={<GrowthTooltip calculators={calculators} />} 
                                                 cursor={{ fill: 'rgba(0,0,0,0.05)' }} 
                                                 wrapperStyle={{ outline: 'none' }} 
                                             />
@@ -287,35 +384,41 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
                                     <Table sx={{ minWidth: { xs: 600, sm: 650 } }}>
                                         <TableHead sx={{ bgcolor: 'var(--bg-secondary)' }}>
                                             <TableRow>
-                                                <TableCell sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Name</TableCell>
-                                                <TableCell sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Asset</TableCell>
-                                                <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Invested</TableCell>
-                                                <TableCell align="center" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Years</TableCell>
-                                                <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Total</TableCell>
-                                                <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Real Value</TableCell>
+                                                <TableCell sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Name</TableCell>
+                                                <TableCell sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Asset</TableCell>
+                                                <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Invested</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Years</TableCell>
+                                                <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Withdrawn</TableCell>
+                                                <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Current Value</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                             {tableData.map((row) => (
                                                 <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { bgcolor: 'var(--bg-secondary)' } }}>
-                                                    <TableCell sx={{ fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: 'var(--text-primary)' }}>{row.name}</TableCell>
-                                                    <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
-                                                        <Box component="span" sx={{ px: 2, py: 0.5, borderRadius: '9999px', fontSize: { xs: '10px', sm: '12px' }, fontWeight: 'semibold', bgcolor: 'rgba(98, 0, 234, 0.1)', color: 'var(--primary-color)' }}>
+                                                    <TableCell sx={{ fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: 'var(--text-primary)', py: 1.5 }}>{row.name}</TableCell>
+                                                    <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>
+                                                        <Box component="span" sx={{ px: 1, py: 0.25, borderRadius: '4px', fontSize: { xs: '10px', sm: '12px' }, fontWeight: 600, bgcolor: 'rgba(98, 0, 234, 0.1)', color: 'var(--primary-color)' }}>
                                                             {row.asset}
                                                         </Box>
                                                     </TableCell>
-                                                    <TableCell align="right" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: 'var(--text-primary)' }}>{formatCurrency(row.invested, currency.code, currency.locale)}</TableCell>
-                                                    <TableCell align="center" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: 'var(--text-primary)' }}>{row.years}</TableCell>
-                                                    <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--success-color)', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{formatCurrency(row.total, currency.code, currency.locale)}</TableCell>
-                                                    <TableCell align="right" sx={{ color: 'var(--primary-color)', fontWeight: 500, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{formatCurrency(row.realValue, currency.code, currency.locale)}</TableCell>
+                                                    <TableCell align="right" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: 'var(--text-primary)', py: 1.5 }}>
+                                                        {formatCurrency(row.invested, currency.code, currency.locale)}
+                                                    </TableCell>
+                                                    <TableCell align="center" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: 'var(--text-primary)', py: 1.5 }}>{row.years}</TableCell>
+                                                    <TableCell align="right" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: (row.totalWithdrawn || 0) > 0 ? '#ff6d00' : 'var(--text-secondary)', py: 1.5 }}>
+                                                        {(row.totalWithdrawn || 0) > 0 ? formatCurrency(row.totalWithdrawn!, currency.code, currency.locale) : '-'}
+                                                    </TableCell>
+                                                    <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--success-color)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>
+                                                        {formatCurrency(row.total, currency.code, currency.locale)}
+                                                    </TableCell>
                                                 </TableRow>
                                             ))}
-                                            <TableRow sx={{ bgcolor: 'var(--bg-secondary)', '& td': { fontWeight: '800', borderTop: '2px solid var(--border-color)', fontSize: { xs: '0.75rem', sm: '0.875rem' } } }}>
+                                            <TableRow sx={{ bgcolor: 'var(--bg-secondary)', '& td': { fontWeight: '800', borderTop: '2px solid var(--border-color)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 } }}>
                                                 <TableCell colSpan={2} sx={{ color: 'var(--text-primary)' }}>Total Portfolio</TableCell>
                                                 <TableCell align="right" sx={{ color: 'var(--text-primary)' }}>{formatCurrency(totals.invested, currency.code, currency.locale)}</TableCell>
                                                 <TableCell align="center" sx={{ color: 'var(--text-secondary)' }}>—</TableCell>
+                                                <TableCell align="right" sx={{ color: '#ff6d00' }}>{totals.totalWithdrawn ? formatCurrency(totals.totalWithdrawn, currency.code, currency.locale) : '-'}</TableCell>
                                                 <TableCell align="right" sx={{ color: 'var(--success-color)' }}>{formatCurrency(totals.total, currency.code, currency.locale)}</TableCell>
-                                                <TableCell align="right" sx={{ color: 'var(--primary-color)' }}>{formatCurrency(totals.realValue, currency.code, currency.locale)}</TableCell>
                                             </TableRow>
                                         </TableBody>
                                     </Table>

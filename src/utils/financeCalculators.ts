@@ -11,6 +11,7 @@ export interface ProjectionResult {
     maturityValue: number;
     inflationAdjustedValue?: number;
     monthlyData?: { month: number; invested: number; value: number }[]; // For charts if needed
+    totalWithdrawn?: number;
 }
 
 export type Frequency = 'monthly' | 'quarterly' | 'semiannually' | 'annually';
@@ -241,8 +242,8 @@ export const formatCompactNumber = (amount: number, currencyCode: string = 'INR'
 
 import type { CalculatorConfig, SIPConfig, StepUpSIPConfig, SWPConfig, LumpsumConfig } from '../types';
 
-export const getYearlyProjection = (calc: CalculatorConfig): { year: number; value: number; invested: number }[] => {
-    const data: { year: number; value: number; invested: number }[] = [];
+export const getYearlyProjection = (calc: CalculatorConfig): { year: number; value: number; invested: number; withdrawn?: number }[] => {
+    const data: { year: number; value: number; invested: number; withdrawn?: number }[] = [];
 
     // Determine duration
     let duration = 0;
@@ -264,11 +265,7 @@ export const getYearlyProjection = (calc: CalculatorConfig): { year: number; val
         currentCorpus = c.lumpSumAmount;
 
         for (let y = 1; y <= duration; y++) {
-            // Annual compounding for Lumpsum
-            // standard formula: P * (1+r)^n
-            // But if we want monthly compounding consistency:
             currentCorpus = c.lumpSumAmount * Math.pow(1 + monthlyRate, y * 12);
-
             data.push({ year: y, value: currentCorpus, invested: totalInvested });
         }
     } else if (calc.type === 'SIP') {
@@ -279,24 +276,10 @@ export const getYearlyProjection = (calc: CalculatorConfig): { year: number; val
         totalInvested = 0;
 
         for (let y = 1; y <= duration; y++) {
-            // Simulate 12 months for this year
             for (let m = 0; m < 12; m++) {
-                currentCorpus += monthly; // Invest at start or end? Standard SIP usually start. 
-                // Let's assume End of Month for simplicity or Start. 
-                // If Start: Invest -> Interest. If End: Interest -> Invest.
-                // Standard formula assumes Start? No, annuity due vs immediate.
-                // To match typical calculators: Interest usually applied on balance.
-                // Let's do: Add contribution -> Add Interest (Start of month)
-
-                // standard: FV = P * ...
-
-                // Let's stick to a simple loop:
-                // Month Start: Add SIP
-                // Month End: Add Interest
-
                 totalInvested += monthly;
-                currentCorpus += monthly; // Add SIP
-                currentCorpus += currentCorpus * monthlyRate; // Interest
+                currentCorpus += monthly;
+                currentCorpus += currentCorpus * monthlyRate;
             }
             data.push({ year: y, value: currentCorpus, invested: totalInvested });
         }
@@ -316,13 +299,8 @@ export const getYearlyProjection = (calc: CalculatorConfig): { year: number; val
                 currentCorpus += currentCorpus * monthlyRate;
             }
 
-            // Step Up annually
             if (c.stepUpFrequency === 'annually') {
                 monthly += monthly * stepUpRate;
-            } else if (c.stepUpFrequency === 'semiannually') {
-                // complex to handle inside annual loop without tracking months globally
-                // Simplifying: assume annual step up for chart if config says semi-annual? 
-                // Or better:
             }
             data.push({ year: y, value: currentCorpus, invested: totalInvested });
         }
@@ -331,6 +309,7 @@ export const getYearlyProjection = (calc: CalculatorConfig): { year: number; val
         currentCorpus = c.lumpSumAmount;
         totalInvested = c.lumpSumAmount;
         const withdrawal = c.withdrawalAmount;
+        let totalWithdrawn = 0;
 
         const withdrawalInterval = getMonthsFromFrequency(c.frequency);
 
@@ -339,17 +318,20 @@ export const getYearlyProjection = (calc: CalculatorConfig): { year: number; val
                 currentCorpus += currentCorpus * monthlyRate; // Interest
 
                 // Withdraw
-                // Calculate global month index essentially
-                // Simplified: if standard monthly
                 if (c.frequency === 'monthly' || (m % withdrawalInterval === 0)) {
                     if (currentCorpus >= withdrawal) {
                         currentCorpus -= withdrawal;
+                        totalWithdrawn += withdrawal;
                     } else {
-                        currentCorpus = 0;
+                        // If corpus depletes, we withdraw whatever is left
+                        if (currentCorpus > 0) {
+                            totalWithdrawn += currentCorpus;
+                            currentCorpus = 0;
+                        }
                     }
                 }
             }
-            data.push({ year: y, value: currentCorpus, invested: totalInvested });
+            data.push({ year: y, value: currentCorpus, invested: totalInvested, withdrawn: totalWithdrawn });
         }
     }
 

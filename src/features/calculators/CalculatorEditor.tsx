@@ -18,7 +18,7 @@ interface CalculatorEditorProps {
 }
 
 const CATEGORIES = ['SIP', 'SWP', 'Lumpsum'];
-const COLORS = ['#6200ea', '#03dac6']; // Primary, Secondary
+// COLORS moved to dynamic CHART_COLORS inside component
 
 export const CalculatorEditor: React.FC<CalculatorEditorProps> = ({ calculator, onUpdate }) => {
     const formId = "calculator-form";
@@ -166,10 +166,25 @@ export const CalculatorEditor: React.FC<CalculatorEditorProps> = ({ calculator, 
         }
     }, [localConfig]);
 
-    const chartData = [
-        { name: 'Invested', value: projection.totalInvested },
-        { name: 'Gained', value: projection.totalInterest > 0 ? projection.totalInterest : 0 }
-    ];
+    // Standard Colors: Purple, Teal
+    // SWP Colors: Blue (Invested), Orange (Withdrawn) - Distinct to avoid confusion
+    const CHART_COLORS = useMemo(() => {
+        return localConfig.type === 'SWP' ? ['#2962ff', '#ff6d00'] : ['#6200ea', '#03dac6'];
+    }, [localConfig.type]);
+
+    const chartData = useMemo(() => {
+        if (localConfig.type === 'SWP') {
+            const swpProjection = projection as ProjectionResult & { totalWithdrawn: number };
+            return [
+                { name: 'Invested', value: swpProjection.totalInvested },
+                { name: 'Withdrawn', value: swpProjection.totalWithdrawn || 0 }
+            ];
+        }
+        return [
+            { name: 'Invested', value: projection.totalInvested },
+            { name: 'Gained', value: projection.totalInterest > 0 ? projection.totalInterest : 0 }
+        ];
+    }, [projection, localConfig.type]);
 
     // For SWP, if interest is negative (loss of capital), we handle it differently? 
     // Usually SWP shows remaining corpus. 
@@ -348,7 +363,7 @@ export const CalculatorEditor: React.FC<CalculatorEditorProps> = ({ calculator, 
                                 width: '24px',
                                 height: '8px',
                                 borderRadius: '4px',
-                                backgroundColor: COLORS[index % COLORS.length]
+                                backgroundColor: CHART_COLORS[index % CHART_COLORS.length]
                             }}></div>
                             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
                                 {entry.name === 'Gained' ? 'Returns' : entry.name}
@@ -368,12 +383,17 @@ export const CalculatorEditor: React.FC<CalculatorEditorProps> = ({ calculator, 
                         zIndex: 1
                     }}>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase' }}>
-                            {activeIndex !== null ? (chartData[activeIndex].name === 'Gained' ? 'Returns' : chartData[activeIndex].name) : 'Invested'}
+                            {activeIndex !== null 
+                                ? (chartData[activeIndex].name === 'Gained' ? 'Returns' : chartData[activeIndex].name) 
+                                : (localConfig.type === 'SWP' ? 'Withdrawn' : 'Returns')
+                            }
                         </div>
                         <div style={{ fontSize: '1.2rem', color: 'var(--text-primary)', fontWeight: 700 }}>
                             {activeIndex !== null 
                                 ? formatCompactNumber(chartData[activeIndex].value, currency.code, currency.locale) 
-                                : formatCompactNumber(projection.totalInvested, currency.code, currency.locale)
+                                : (localConfig.type === 'SWP' 
+                                    ? formatCompactNumber((projection as ProjectionResult & { totalWithdrawn: number }).totalWithdrawn || 0, currency.code, currency.locale)
+                                    : formatCompactNumber(projection.totalInterest, currency.code, currency.locale))
                             }
                         </div>
                     </div>
@@ -395,7 +415,7 @@ export const CalculatorEditor: React.FC<CalculatorEditorProps> = ({ calculator, 
                                 {chartData.map((_, index) => (
                                     <Cell 
                                         key={`cell-${index}`} 
-                                        fill={COLORS[index % COLORS.length]} 
+                                        fill={CHART_COLORS[index % CHART_COLORS.length]} 
                                         stroke="none"
                                         opacity={activeIndex === null || activeIndex === index ? 1 : 0.6}
                                     />
@@ -407,7 +427,9 @@ export const CalculatorEditor: React.FC<CalculatorEditorProps> = ({ calculator, 
 
                 <div className="projection-details" style={{ marginTop: '0.5rem', width: '100%', textAlign: 'center' }}>
                     <div style={{ marginBottom: '8px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Value</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            {localConfig.type === 'SWP' ? 'Remaining Corpus' : 'Total Value'}
+                        </div>
                         <div style={{ fontSize: '1.4rem', color: 'var(--text-primary)', fontWeight: 700, lineHeight: 1.2 }}>
                             {formatCurrency(projection.maturityValue, currency.code, currency.locale)}
                         </div>

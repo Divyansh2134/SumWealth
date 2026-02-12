@@ -131,7 +131,7 @@ export default function InvestmentCalculator() {
     };
 
     const handleCalculate = () => {
-        console.log("Calculated Assets Data:", assetsList);
+
     };
 
     if (!activeAsset) return null; // Safety check

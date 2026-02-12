@@ -90,9 +90,38 @@ export const TabbedCalculatorView: React.FC = () => {
         setShowSummary(true);
         setHasCalculated(true);
         
+        // Custom smooth scroll function for better control
+        const smoothScrollTo = (element: HTMLElement) => {
+            const targetPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            const startPosition = window.pageYOffset;
+            const distance = targetPosition - startPosition;
+            const duration = 800;
+            let start: number | null = null;
+
+            const animation = (currentTime: number) => {
+                if (start === null) start = currentTime;
+                const timeElapsed = currentTime - start;
+                const run = ease(timeElapsed, startPosition, distance, duration);
+                window.scrollTo(0, run);
+                if (timeElapsed < duration) requestAnimationFrame(animation);
+            };
+
+            // Easing function (easeInOutQuad)
+            const ease = (t: number, b: number, c: number, d: number) => {
+                t /= d / 2;
+                if (t < 1) return c / 2 * t * t + b;
+                t--;
+                return -c / 2 * (t * (t - 2) - 1) + b;
+            };
+
+            requestAnimationFrame(animation);
+        };
+
         // Timeout to allow DOM to update if showing summary for first time
         setTimeout(() => {
-            summaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (summaryRef.current) {
+                smoothScrollTo(summaryRef.current);
+            }
         }, 100);
     };
 
