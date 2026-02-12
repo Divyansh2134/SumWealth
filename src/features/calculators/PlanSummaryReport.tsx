@@ -177,6 +177,10 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
         return globalInflation || localInflation;
     }, [calculators]);
 
+    const hasSWP = useMemo(() => {
+        return calculators.some(c => c.type === 'SWP');
+    }, [calculators]);
+
     const reportData = useMemo(() => {
         // Detect global inflation rate if present
         const globalInflationCalc = calculators.find(c => c.type === 'Inflation') as InflationConfig | undefined;
@@ -397,7 +401,9 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
                                                 <TableCell sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Asset</TableCell>
                                                 <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Invested</TableCell>
                                                 <TableCell align="center" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Years</TableCell>
-                                                <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Withdrawn</TableCell>
+                                                {hasSWP && (
+                                                    <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Withdrawn</TableCell>
+                                                )}
                                                 {hasInflation && (
                                                     <TableCell align="right" sx={{ fontWeight: 'bold', color: 'var(--text-secondary)', fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 1.5 }}>Real Value</TableCell>
                                                 )}
@@ -417,9 +423,11 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
                                                         {formatCurrency(row.invested, currency.code, currency.locale)}
                                                     </TableCell>
                                                     <TableCell align="center" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: 'var(--text-primary)', py: 1.5 }}>{row.years}</TableCell>
-                                                    <TableCell align="right" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: (row.totalWithdrawn || 0) > 0 ? '#ff6d00' : 'var(--text-secondary)', py: 1.5 }}>
-                                                        {(row.totalWithdrawn || 0) > 0 ? formatCurrency(row.totalWithdrawn!, currency.code, currency.locale) : '-'}
-                                                    </TableCell>
+                                                    {hasSWP && (
+                                                        <TableCell align="right" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: (row.totalWithdrawn || 0) > 0 ? '#ff6d00' : 'var(--text-secondary)', py: 1.5 }}>
+                                                            {(row.totalWithdrawn || 0) > 0 ? formatCurrency(row.totalWithdrawn!, currency.code, currency.locale) : '-'}
+                                                        </TableCell>
+                                                    )}
                                                     {hasInflation && (
                                                         <TableCell align="right" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: 'var(--text-primary)', py: 1.5 }}>
                                                             {row.realValue !== undefined ? formatCurrency(row.realValue, currency.code, currency.locale) : '-'}
@@ -434,7 +442,9 @@ export const PlanSummaryReport: React.FC<PlanSummaryReportProps> = ({ calculator
                                                 <TableCell colSpan={2} sx={{ color: 'var(--text-primary)' }}>Total Portfolio</TableCell>
                                                 <TableCell align="right" sx={{ color: 'var(--text-primary)' }}>{formatCurrency(totals.invested, currency.code, currency.locale)}</TableCell>
                                                 <TableCell align="center" sx={{ color: 'var(--text-secondary)' }}>—</TableCell>
-                                                <TableCell align="right" sx={{ color: '#ff6d00' }}>{totals.totalWithdrawn ? formatCurrency(totals.totalWithdrawn, currency.code, currency.locale) : '-'}</TableCell>
+                                                {hasSWP && (
+                                                    <TableCell align="right" sx={{ color: '#ff6d00' }}>{totals.totalWithdrawn ? formatCurrency(totals.totalWithdrawn, currency.code, currency.locale) : '-'}</TableCell>
+                                                )}
                                                 {hasInflation && (
                                                     <TableCell align="right" sx={{ color: 'var(--text-primary)' }}>{formatCurrency(totals.realValue, currency.code, currency.locale)}</TableCell>
                                                 )}

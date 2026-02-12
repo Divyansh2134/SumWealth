@@ -30,7 +30,19 @@ const calculatorReducer = (state: { calculators: CalculatorConfig[] }, action: C
 };
 
 const initialState = {
-    calculators: [],
+    calculators: [
+        {
+            id: 'default-sip',
+            type: 'SIP',
+            name: 'My Goal Plan',
+            assetClass: 'Mutual Fund',
+            createdAt: new Date().toISOString(),
+            monthlyAmount: 5000,
+            durationYears: 10,
+            expectedRatePercent: 12,
+            isNew: true
+        }
+    ] as CalculatorConfig[],
 };
 
 export const CalculatorProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
