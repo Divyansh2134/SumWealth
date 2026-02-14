@@ -34,7 +34,7 @@ const initialState = {
         {
             id: 'default-sip',
             type: 'SIP',
-            name: 'My Goal Plan',
+            name: 'Large Cap',
             assetClass: 'Mutual Fund',
             createdAt: new Date().toISOString(),
             monthlyAmount: 5000,
