@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { useToast } from '../../context/ToastContext';
 import { useCurrency } from '../../context/CurrencyContext'; // New import
 import type { CalculatorConfig, SIPConfig, StepUpSIPConfig, SWPConfig, LumpsumConfig } from '../../types';
 import { SIPForm } from './forms/SIPForm';
@@ -33,35 +32,24 @@ export const CalculatorEditor: React.FC<CalculatorEditorProps> = ({ calculator, 
         setLocalConfig(calculator);
     }, [calculator]);
 
-    // Derived state for disabled button
-    // Check if localConfig is different from calculator (saved state)
-    const hasChanges = useMemo(() => {
-        return JSON.stringify(localConfig) !== JSON.stringify(calculator);
-    }, [localConfig, calculator]);
-
     const isNew = 'isNew' in localConfig && localConfig.isNew;
-    const { addToast } = useToast();
     
     const handleLocalUpdate = (newConfig: CalculatorConfig) => {
         setLocalConfig(newConfig);
+        
+        // Auto-save: Propagate changes immediately
+        // We also clear the isNew flag as soon as an edit happens (or efficiently ignore it)
+        const configToSave = { ...newConfig } as CalculatorWithMeta;
+        if (configToSave.isNew) {
+             delete configToSave.isNew;
+        }
+        onUpdate(configToSave);
     };
 
     // Helper type for internal use
     type CalculatorWithMeta = CalculatorConfig & { isNew?: boolean };
 
-    const handleSave = () => {
-        // Remove isNew flag on save
-        const configToSave = { ...localConfig } as CalculatorWithMeta;
-        if (configToSave.isNew) {
-            delete configToSave.isNew;
-        }
-        onUpdate(configToSave);
-
-        // Show Toast
-        const action = isNew ? 'Added' : 'Updated';
-        const name = configToSave.name || configToSave.type;
-        addToast(`${action} ${name}`, 'success');
-    };
+    // handleSave removed as it's no longer needed for manual action
 
 
     // Type Switching Logic
@@ -365,7 +353,7 @@ export const CalculatorEditor: React.FC<CalculatorEditorProps> = ({ calculator, 
             </div>
 
             {/* Right Panel: Graph */}
-            <div className="editor-right-panel" style={{ display: 'flex', flexDirection: 'column', padding: '1rem' }}>
+            <div className="editor-right-panel" style={{ display: 'flex', flexDirection: 'column', padding: '1rem', paddingTop: '3rem' }}>
                 
                 {/* Custom Oval Legend - Moved to Top */}
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
@@ -421,6 +409,7 @@ export const CalculatorEditor: React.FC<CalculatorEditorProps> = ({ calculator, 
                                 endAngle={-270}
                                 paddingAngle={2}
                                 dataKey="value"
+                                isAnimationActive={false}
                                 onMouseEnter={(_, index) => setActiveIndex(index)}
                                 onMouseLeave={() => setActiveIndex(null)}
                             >
@@ -453,18 +442,6 @@ export const CalculatorEditor: React.FC<CalculatorEditorProps> = ({ calculator, 
                             Real Value: <strong>{formatCurrency(projection.inflationAdjustedValue, currency.code, currency.locale)}</strong>
                         </div>
                     )}
-                </div>
-
-                {/* Update Button */}
-                <div style={{ marginTop: 'auto', paddingTop: '1rem', display: 'flex', justifyContent: 'center' }}>
-                    <button
-                        className="btn btn-primary"
-                        onClick={handleSave}
-                        disabled={!isNew && !hasChanges}
-                        style={{ width: '100%', padding: '10px' }}
-                    >
-                        {isNew ? 'Add' : 'Update'}
-                    </button>
                 </div>
             </div>
         </div>
