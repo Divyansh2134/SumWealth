@@ -133,6 +133,13 @@ export const TabbedCalculatorView: React.FC = () => {
         <div className="dashboard-container">
             <Header />
 
+            <div className="hero-section">
+                <h1 className="hero-title">Plan Smarter. Invest Better. Grow Wealth.</h1>
+                <p className="hero-description">
+                    Most calculators just do math. IncomePlanner builds a strategy. Combine SIPs, Step-up investments, and SWPs into one dynamic plan to visualize exactly how your money grows—and pays you back.
+                </p>
+            </div>
+
             <TabRow
                 calculators={calculators}
                 activeTabId={activeTabId}
