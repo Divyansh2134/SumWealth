@@ -136,7 +136,7 @@ export const TabbedCalculatorView: React.FC = () => {
             <div className="hero-section">
                 <h1 className="hero-title">Plan Smarter. Invest Better. Grow Wealth.</h1>
                 <p className="hero-description">
-                    Most calculators just do math. IncomePlanner builds a strategy. Combine SIPs, Step-up investments, and SWPs into one dynamic plan to visualize exactly how your money grows—and pays you back.
+                    Build a real-world strategy, not just a calculation. Combine SIPs, Step-ups, and SWPs into a dynamic plan that accounts for inflation—visualizing your true wealth and income potential.
                 </p>
             </div>
 
