@@ -84,6 +84,10 @@ export const ToggleGroup: React.FC<ToggleGroupProps> = ({ label, value, onChange
                     type="button"
                     className={`toggle-group-item ${value === option.value ? 'active' : ''}`}
                     onClick={() => onChange(option.value)}
+                    onTouchEnd={(e) => {
+                        e.preventDefault();
+                        onChange(option.value);
+                    }}
                 >
                     {option.label}
                 </button>

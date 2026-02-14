@@ -82,7 +82,7 @@ export const LumpsumForm: React.FC<LumpsumFormProps> = ({ initialData, onSubmit,
           onChange={(val) => handleChange('lumpSumAmount', val)}
           min={5000}
           max={10000000}
-          step={5000}
+          step={100}
           unit={currency.symbol}
           error={errors.lumpSumAmount}
         />

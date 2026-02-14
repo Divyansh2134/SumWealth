@@ -26,6 +26,7 @@ export const SliderInput: React.FC<SliderInputProps> = ({
   variant = 'default',
 }) => {
   const handleSliderChange = (e: ChangeEvent<HTMLInputElement>) => {
+    hasChangedRef.current = true;
     onChange(Number(e.target.value));
   };
 
@@ -35,6 +36,11 @@ export const SliderInput: React.FC<SliderInputProps> = ({
 
   const percentage = ((value - min) / (max - min)) * 100;
   
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const isDraggingRef = React.useRef(false);
+  const hasChangedRef = React.useRef(false);
+  const touchStartPosRef = React.useRef({ x: 0, y: 0 });
+
   return (
     <div className={`form-group slider-group ${variant}`}>
       <div className="slider-header">
@@ -52,7 +58,14 @@ export const SliderInput: React.FC<SliderInputProps> = ({
         </div>
       </div>
       <div className="slider-track-wrapper">
+        <div 
+          className="visual-track" 
+          style={{
+            background: `linear-gradient(to right, var(--primary-color) ${percentage}%, #e0e0e0 ${percentage}%)`
+          }}
+        />
         <input
+          ref={inputRef}
           type="range"
           className="form-range"
           min={min}
@@ -60,8 +73,41 @@ export const SliderInput: React.FC<SliderInputProps> = ({
           step={step}
           value={value}
           onChange={handleSliderChange}
-          style={{
-            background: `linear-gradient(to right, var(--primary-color) ${percentage}%, #e0e0e0 ${percentage}%)`
+          onTouchStart={(e) => {
+             isDraggingRef.current = false;
+             hasChangedRef.current = false;
+             touchStartPosRef.current = { 
+                x: e.touches[0].clientX, 
+                y: e.touches[0].clientY 
+             };
+          }}
+          onTouchMove={(e) => {
+             const touch = e.touches[0];
+             const moveX = Math.abs(touch.clientX - touchStartPosRef.current.x);
+             const moveY = Math.abs(touch.clientY - touchStartPosRef.current.y);
+             
+             if (moveX > 5 || moveY > 5) {
+                isDraggingRef.current = true;
+             }
+          }}
+          onTouchEnd={(e) => {
+            const touch = e.changedTouches[0];
+            const moveX = Math.abs(touch.clientX - touchStartPosRef.current.x);
+            const moveY = Math.abs(touch.clientY - touchStartPosRef.current.y);
+            const wasDrag = isDraggingRef.current || (moveX > 5 || moveY > 5);
+
+            if (!wasDrag && !hasChangedRef.current && inputRef.current) {
+               const rect = inputRef.current.getBoundingClientRect();
+               const touchX = touch.clientX - rect.left;
+               const percent = Math.min(Math.max(touchX / rect.width, 0), 1);
+               const newValue = Math.round((min + percent * (max - min)) / step) * step;
+               
+               const clampedValue = Math.min(Math.max(newValue, min), max);
+               
+               if (Math.abs(clampedValue - value) > step / 10) {
+                  onChange(clampedValue);
+               }
+            }
           }}
         />
       </div>

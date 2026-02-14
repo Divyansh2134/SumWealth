@@ -125,10 +125,13 @@
     font-size: 0.9rem;
     transition: all 0.2s;
     border: 1px solid transparent;
+    touch-action: manipulation;
 }
 
-.editor-category-tab:hover {
-    background-color: rgba(98, 0, 234, 0.05);
+@media (hover: hover) {
+    .editor-category-tab:hover {
+        background-color: rgba(98, 0, 234, 0.05);
+    }
 }
 
 .editor-category-tab.active {
@@ -188,13 +191,16 @@
     white-space: nowrap;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     /* Subtle shadow for depth */
+    touch-action: manipulation;
 }
 
-.pill-switch:hover {
-    background-color: rgba(98, 0, 234, 0.1);
-    /* Darker purple on hover */
-    color: var(--primary-color);
-    transform: translateY(-1px);
+@media (hover: hover) {
+    .pill-switch:hover {
+        background-color: rgba(98, 0, 234, 0.1);
+        /* Darker purple on hover */
+        color: var(--primary-color);
+        transform: translateY(-1px);
+    }
 }
 
 .pill-switch.active {

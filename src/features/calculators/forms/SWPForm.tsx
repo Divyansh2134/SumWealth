@@ -89,7 +89,7 @@ export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCance
           onChange={(val) => handleChange('lumpSumAmount', val)}
           min={10000}
           max={10000000}
-          step={10000}
+          step={100}
           unit={currency.symbol}
           error={errors.lumpSumAmount}
         />
@@ -101,7 +101,7 @@ export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCance
             onChange={(val) => handleChange('withdrawalAmount', val)}
             min={500}
             max={100000}
-            step={500}
+            step={100}
             unit={currency.symbol}
             error={errors.withdrawalAmount}
           />
@@ -122,7 +122,7 @@ export const SWPForm: React.FC<SWPFormProps> = ({ initialData, onSubmit, onCance
           onChange={(val) => handleChange('expectedRatePercent', val)}
           min={1}
           max={30}
-          step={0.5}
+          step={0.1}
           unit="%"
           error={errors.expectedRatePercent}
         />

@@ -92,7 +92,7 @@ export const SIPForm: React.FC<SIPFormProps> = ({ initialData, onSubmit, onCance
           onChange={(val) => handleChange('monthlyAmount', val)}
           min={500}
           max={100000}
-          step={500}
+          step={100}
           unit={currency.symbol}
           error={errors.monthlyAmount}
         />

@@ -224,6 +224,10 @@ export const CalculatorEditor: React.FC<CalculatorEditorProps> = ({ calculator, 
                                 key={cat}
                                 className={`editor-category-tab ${currentCategory === cat ? 'active' : ''}`}
                                 onClick={() => handleCategoryChange(cat)}
+                                onTouchEnd={(e) => {
+                                    e.preventDefault();
+                                    handleCategoryChange(cat);
+                                }}
                             >
                                 {cat}
                             </button>
@@ -289,6 +293,10 @@ export const CalculatorEditor: React.FC<CalculatorEditorProps> = ({ calculator, 
                                     type="button"
                                     className={`pill-switch ${isStepUp ? 'active' : ''}`}
                                     onClick={() => handleStepUpToggle(!isStepUp)}
+                                    onTouchEnd={(e) => {
+                                        e.preventDefault();
+                                        handleStepUpToggle(!isStepUp);
+                                    }}
                                 >
                                     {isStepUp ? 'Step Up Enabled' : 'Enable Step Up'}
                                 </button>
@@ -328,6 +336,10 @@ export const CalculatorEditor: React.FC<CalculatorEditorProps> = ({ calculator, 
                                     type="button"
                                     className={`pill-switch ${hasInflation ? 'active' : ''}`}
                                     onClick={() => handleInflationToggle(!hasInflation)}
+                                    onTouchEnd={(e) => {
+                                        e.preventDefault();
+                                        handleInflationToggle(!hasInflation);
+                                    }}
                                 >
                                     {hasInflation ? 'Inflation Adjusted' : 'Adjust Inflation'}
                                 </button>
