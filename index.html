@@ -4,48 +4,187 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
+  <!-- Performance: early connection to external domains -->
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IncomePlanner – SIP Calculator & Financial Goal Planning Tool</title>
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#6200ea" />
+  <title>SIP Calculator – Combine SIP, SWP & Step-Up Plans | Income Planner</title>
   <meta name="description"
-    content="Build a real-world strategy, not just a calculation. Combine SIPs, Step-ups, and SWPs into a dynamic plan that accounts for inflation—visualizing your true wealth and income potential." />
+    content="Free SIP, SWP & Step-Up investment calculator. Add multiple plans to one basket and see your total returns at a glance. Works for mutual funds, stocks, gold, and more." />
   <meta name="keywords"
-    content="SIP Calculator, SWP Calculator, Lumpsum Calculator, Investment Planner, Financial Planning, Mutual Funds, Income Planner, Wealth Calculator" />
-  <meta name="author" content="SumWealth" />
+    content="SIP calculator, SWP calculator, step-up SIP calculator, lumpsum calculator, mutual fund calculator, investment planner, income planner, portfolio calculator, SIP returns, SWP returns, SWP calculator for retirement, mutual fund return calculator, combine SIP and SWP, investment calculator online, compound interest calculator, retirement income planner" />
+  <meta name="author" content="Income Planner" />
   <link rel="canonical" href="https://incomeplanner.org/" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://incomeplanner.org/" />
-  <meta property="og:title" content="Plan Smarter. Invest Better. Grow Wealth." />
+  <meta property="og:title" content="SIP Calculator – Combine SIP, SWP & Step-Up Plans" />
   <meta property="og:description"
-    content="Build a real-world strategy, not just a calculation. Combine SIPs, Step-ups, and SWPs into a dynamic plan that accounts for inflation—visualizing your true wealth and income potential." />
+    content="Free calculator to plan SIP, SWP and Step-Up investments together. Add multiple plans, see total returns, and figure out how your money actually grows over time." />
   <meta property="og:image" content="https://incomeplanner.org/og-image.png" />
+  <meta property="og:image:width" content="1080" />
+  <meta property="og:image:height" content="1080" />
+  <meta property="og:image:alt" content="Income Planner - SIP, SWP and Step-Up Investment Calculator" />
+  <meta property="og:site_name" content="Income Planner" />
+  <meta property="og:locale" content="en_US" />
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="twitter:url" content="https://incomeplanner.org/" />
-  <meta property="twitter:title" content="Plan Smarter. Invest Better. Grow Wealth." />
+  <meta property="twitter:title" content="SIP Calculator – Combine SIP, SWP & Step-Up Plans" />
   <meta property="twitter:description"
-    content="Build a real-world strategy, not just a calculation. Combine SIPs, Step-ups, and SWPs into a dynamic plan that accounts for inflation—visualizing your true wealth and income potential." />
+    content="Free calculator to plan SIP, SWP and Step-Up investments together. Add multiple plans, see total returns, and figure out how your money actually grows over time." />
   <meta property="twitter:image" content="https://incomeplanner.org/og-image.png" />
 
-  <!-- Structured Data (JSON-LD) -->
+  <!-- Structured Data: WebApplication -->
   <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Income Planner",
+      "url": "https://incomeplanner.org/",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "description": "Free online calculator that lets you combine SIP, SWP, Step-Up SIP, and Lumpsum investment plans into one basket. See total returns, year-by-year growth, and how inflation affects your money.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "browserRequirements": "Requires a modern web browser",
+      "softwareVersion": "1.0",
+      "creator": {
+        "@type": "Organization",
         "name": "Income Planner",
-        "url": "https://incomeplanner.org/",
-        "applicationCategory": "FinanceApplication",
-        "operatingSystem": "All",
-        "description": "Most calculators just do math. IncomePlanner builds a strategy. Combine SIPs, Step-up investments, and SWPs into one dynamic plan to visualize exactly how your money grows—and pays you back.",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
+        "url": "https://incomeplanner.org/"
+      },
+      "featureList": [
+        "SIP (Systematic Investment Plan) Calculator",
+        "SWP (Systematic Withdrawal Plan) Calculator",
+        "Step-Up SIP Calculator",
+        "Lumpsum Investment Calculator",
+        "Combine multiple plans into one portfolio",
+        "Year-by-year growth projections",
+        "Inflation-adjusted returns",
+        "Works for mutual funds, stocks, gold, and more"
+      ]
+    }
+  </script>
+
+  <!-- Structured Data: FAQPage -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is a SIP calculator?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A SIP calculator helps you estimate how much your monthly investments will grow over time. You enter how much you invest each month, for how many years, and at what expected return rate — and it shows you the final amount. Income Planner goes a step further by letting you combine multiple SIPs and other plans into one view."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How is Income Planner different from other SIP calculators?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most SIP calculators only handle one plan at a time. Income Planner lets you add multiple plans — SIP, Step-Up SIP, SWP, Lumpsum — and calculates the combined result. You can see how your full portfolio performs together, not just one investment in isolation."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I plan SIP and SWP together?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. You can add a SIP plan for the accumulation phase and an SWP plan for the withdrawal phase, all in the same basket. This helps you see the big picture — how much you build up and how long your withdrawals can last."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a Step-Up SIP?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A Step-Up SIP is when you increase your monthly investment by a fixed percentage every year. For example, if you start with 5,000/month and step up by 10% each year, next year you invest 5,500/month. This is a common approach because most people's income grows over time."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Income Planner free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, completely free. There are no hidden charges, no sign-up required, and no ads. Just open the site and start planning."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I use SWP for monthly income after retirement?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "If you have a mutual fund corpus and want regular income from it, add an SWP plan. Enter your total corpus, the monthly amount you want to withdraw, and the expected return rate. The calculator shows how long your money will last. You can combine it with a SIP to see how much you need to save before you retire."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I plan for my child's education or a specific financial goal?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Add a SIP or Step-Up SIP with the time period that matches your goal — say 15 years for a child's college fund. Set the monthly amount and expected return, and the tool shows you the projected corpus. Adjust the numbers until you're happy with the target."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Income Planner account for inflation?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. When you calculate your plans, the results include both the nominal value and an inflation-adjusted view. This shows you what your money will actually be worth in today's terms, so you're not fooled by a big number that doesn't account for rising prices."
+          }
         }
-      }
-    </script>
+      ]
+    }
+  </script>
+
+  <!-- Structured Data: HowTo -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "How to use Income Planner to calculate your investment returns",
+      "description": "A quick guide to combining SIP, SWP, Step-Up SIP, and Lumpsum plans into one portfolio and seeing your total projected returns.",
+      "totalTime": "PT2M",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Add your first plan",
+          "text": "Click the + button and pick an asset type like Mutual Fund, Stock, or Gold. A default SIP plan gets added to your basket."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Set your numbers",
+          "text": "Adjust the monthly amount, time period, and expected return rate. You can also switch the plan type to Step-Up SIP, SWP, or Lumpsum."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Add more plans if you want",
+          "text": "Click + again to add another plan. You can mix SIP, SWP, Step-Up, and Lumpsum — as many as you need."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 4,
+          "name": "Hit Calculate All Plans",
+          "text": "Press the Calculate All Plans button at the bottom. The tool shows your combined results — total invested, total returns, year-by-year growth chart, and an inflation-adjusted view."
+        }
+      ]
+    }
+  </script>
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-8DVVJN9ZMM"></script>
@@ -58,11 +197,73 @@
   </script>
 </head>
 
-
-
 <body>
+  <!-- Skip to content link for accessibility -->
+  <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
+
+  <!-- Fallback content for search engines that don't run JavaScript -->
+  <noscript>
+    <div style="max-width: 800px; margin: 2rem auto; padding: 1rem; font-family: sans-serif;">
+      <h1>Income Planner – SIP, SWP & Step-Up Investment Calculator</h1>
+      <p>Income Planner is a free online tool that lets you combine multiple investment calculators into one plan.
+        Instead of calculating SIP, SWP, and Step-Up SIP returns one at a time, you can add them all to a single basket
+        and see the combined result.</p>
+
+      <h2>What you can do here</h2>
+      <ul>
+        <li>Calculate SIP (Systematic Investment Plan) returns for mutual funds, stocks, gold, and more</li>
+        <li>Plan SWP (Systematic Withdrawal Plan) to figure out withdrawals from your corpus</li>
+        <li>Use Step-Up SIP to see how increasing your monthly investment every year changes the outcome</li>
+        <li>Add a Lumpsum investment and see how it compounds over time</li>
+        <li>Combine all of the above into one portfolio and get a combined projection</li>
+      </ul>
+
+      <h2>How to use Income Planner</h2>
+      <ol>
+        <li>Click the + button and pick an asset type (Mutual Fund, Stock, Gold, etc.)</li>
+        <li>Adjust the monthly amount, time period, and expected return rate</li>
+        <li>Switch the plan type to Step-Up SIP, SWP, or Lumpsum if needed</li>
+        <li>Add more plans by clicking + again — mix and match as needed</li>
+        <li>Press "Calculate All Plans" to see your combined results</li>
+      </ol>
+
+      <h2>Frequently Asked Questions</h2>
+      <h3>What is a SIP calculator?</h3>
+      <p>A SIP calculator helps you estimate how much your monthly investments will grow over time. You enter how much
+        you invest each month, for how many years, and at what expected return rate — and it shows you the final amount.
+      </p>
+
+      <h3>How is this different from other SIP calculators?</h3>
+      <p>Most calculators only handle one plan at a time. Income Planner lets you add multiple plans — SIP, Step-Up SIP,
+        SWP, Lumpsum — and calculates the combined result.</p>
+
+      <h3>Can I plan SIP and SWP together?</h3>
+      <p>Yes. Add a SIP for the accumulation phase and an SWP for withdrawals, all in the same basket. See the big
+        picture of how much you build up and how long your withdrawals last.</p>
+
+      <h3>What is a Step-Up SIP?</h3>
+      <p>A Step-Up SIP is when you increase your monthly investment by a fixed percentage every year. For example, start
+        with 5,000/month and step up 10% each year.</p>
+
+      <h3>Is this tool free?</h3>
+      <p>Yes, completely free. No sign-up, no ads, no hidden charges.</p>
+
+      <h3>How can I use SWP for monthly income after retirement?</h3>
+      <p>Add an SWP plan with your total corpus, the monthly amount you want to withdraw, and the expected return rate.
+        The calculator shows how long your money will last.</p>
+
+      <h3>Can I plan for my child's education?</h3>
+      <p>Yes. Add a SIP or Step-Up SIP with the time period matching your goal — say 15 years for college. Set the
+        monthly amount and expected return, and see the projected corpus.</p>
+
+      <h3>Does Income Planner account for inflation?</h3>
+      <p>Yes. Results include both nominal and inflation-adjusted values, so you know what your money is really worth
+        in today's terms.</p>
+    </div>
+  </noscript>
 </body>
 
 </html>

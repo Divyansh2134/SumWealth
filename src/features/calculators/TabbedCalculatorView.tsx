@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useCalculator } from '../../context/CalculatorContext';
 import type { CalculatorConfig, SIPConfig } from '../../types';
 import { CalculatorEditor } from './CalculatorEditor';
@@ -8,7 +8,10 @@ import { formatCompactNumber } from '../../utils/financeCalculators';
 import '../../styles/TabbedCalculatorView.css';
 import { v4 as uuidv4 } from 'uuid';
 
-import { PlanSummaryReport } from './PlanSummaryReport';
+// Lazy-load — contains recharts + @mui/material (~350KB vendor deps)
+const PlanSummaryReport = React.lazy(() =>
+  import('./PlanSummaryReport').then(m => ({ default: m.PlanSummaryReport }))
+);
 
 import { useCurrency } from '../../context/CurrencyContext';
 
@@ -133,12 +136,12 @@ export const TabbedCalculatorView: React.FC = () => {
         <div className="dashboard-container">
             <Header />
 
-            <div className="hero-section">
-                <h1 className="hero-title">Plan Smarter. Invest Better. Grow Wealth.</h1>
+            <section className="hero-section" aria-label="Introduction">
+                <h1 className="hero-title">SIP, SWP & Step-Up Calculator — All in One Place</h1>
                 <p className="hero-description">
-                    Build a real-world strategy, not just a calculation. Combine SIPs, Step-ups, and SWPs into a dynamic plan that accounts for inflation—visualizing your true wealth and income potential.
+                    Add multiple investment plans to a single basket. SIP, Step-Up SIP, SWP, Lumpsum — combine them all and see your total returns at a glance.
                 </p>
-            </div>
+            </section>
 
             <TabRow
                 calculators={calculators}
@@ -150,7 +153,7 @@ export const TabbedCalculatorView: React.FC = () => {
             />
 
             {/* Main Content Area */}
-            <div className="dashboard-content">
+            <main id="main-content" className="dashboard-content">
                 {activeCalculator ? (
                     <div className="calculator-config-panel">
 
@@ -263,7 +266,7 @@ export const TabbedCalculatorView: React.FC = () => {
                         </div>
                     </div>
                 )}
-            </div>
+            </main>
 
             {/* Calculate All Button */}
             {calculators.length > 0 && (
@@ -293,9 +296,15 @@ export const TabbedCalculatorView: React.FC = () => {
 
             {showSummary && (
                 <div ref={summaryRef}>
-                    <PlanSummaryReport
-                        calculators={snapshotCalculators}
-                    />
+                    <Suspense fallback={
+                        <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-secondary)' }}>
+                            Loading report…
+                        </div>
+                    }>
+                        <PlanSummaryReport
+                            calculators={snapshotCalculators}
+                        />
+                    </Suspense>
                 </div>
             )}
         </div>

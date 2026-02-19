@@ -38,15 +38,25 @@
 
 @media (max-width: 768px) {
     .hero-title {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
     }
 
     .hero-description {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
 
     .hero-section {
-        padding: 1.5rem 1rem 1rem;
+        padding: 1.25rem 1rem 0.75rem;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-section {
+        padding: 1.75rem 1rem 1.25rem;
     }
 }
 
@@ -183,14 +193,7 @@
     /* Enable text truncation */
 }
 
-.viewfinder-grid {
-    display: grid;
-    /* Tighter grid */
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 0.8rem;
-    width: 100%;
-    margin-bottom: 1.5rem;
-}
+
 
 .mini-card:hover {
     background-color: var(--bg-secondary);
@@ -469,6 +472,10 @@
 
     .calculate-all-btn {
         max-width: 100%;
+    }
+
+    .action-footer-section {
+        padding-bottom: calc(1rem + var(--safe-area-bottom, 0px));
     }
 }
 

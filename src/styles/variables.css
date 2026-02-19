@@ -10,8 +10,6 @@
   --bg-primary: #f5f5f5;
   /* Light Grey Background */
   --card-bg: #ffffff;
-  /* Light Grey Background */
-  --card-bg: #ffffff;
   /* White Card Surface */
   --bg-secondary: #ffffff;
   /* Secondary Background */
@@ -33,6 +31,12 @@
 
   --card-selected-bg: #f3e5f5;
   /* Light Purple for Light Mode */
+
+  /* Safe area for notched devices */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
 }
 
 * {

@@ -1,0 +1,164 @@
+/* ─── Footer ─── */
+.site-footer {
+    width: 100%;
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
+    padding: 3rem 1rem 1.5rem;
+    padding-bottom: calc(1.5rem + var(--safe-area-bottom, 0px));
+    margin-top: 2rem;
+}
+
+.footer-inner {
+    max-width: var(--container-max-width, 1200px);
+    margin: 0 auto;
+}
+
+.footer-brand {
+    margin-bottom: 2rem;
+}
+
+.footer-logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.footer-tagline {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 480px;
+}
+
+/* Links layout — 3 columns */
+.footer-links {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-col h3.footer-heading {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-col li {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    padding: 0.3rem 0;
+}
+
+.footer-col li a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-col li a:hover {
+    color: var(--primary-color);
+}
+
+/* Team LinkedIn links */
+.footer-team-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-team-link:hover {
+    color: var(--primary-color);
+}
+
+.footer-team-link svg {
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    flex-shrink: 0;
+}
+
+.footer-team-link:hover svg {
+    opacity: 1;
+}
+
+/* Bottom bar */
+.footer-bottom {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.25rem;
+    text-align: center;
+}
+
+.footer-bottom p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.footer-note {
+    margin-top: 0.5rem !important;
+    font-size: 0.75rem !important;
+    color: var(--text-secondary) !important;
+    opacity: 0.7;
+    max-width: 600px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    line-height: 1.5;
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .footer-links {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+    .site-footer {
+        padding: 2rem 1rem 1.25rem;
+        padding-bottom: calc(1.25rem + var(--safe-area-bottom, 0px));
+    }
+
+    .footer-links {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .footer-col:nth-child(3) {
+        grid-column: 1 / -1;
+    }
+
+    .footer-brand {
+        margin-bottom: 1.5rem;
+    }
+
+    .footer-logo {
+        font-size: 1.1rem;
+    }
+
+    .footer-tagline {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .footer-links {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+}

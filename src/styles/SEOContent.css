@@ -1,0 +1,237 @@
+/* SEO Content Section */
+.seo-content {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 2rem 1rem 3rem;
+}
+
+.seo-content-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+/* Headings */
+.seo-heading {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+}
+
+/* About text */
+.seo-text {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.seo-text:last-child {
+    margin-bottom: 0;
+}
+
+/* Feature List */
+.seo-feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.seo-feature-list li {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    padding-left: 1.2rem;
+    position: relative;
+}
+
+.seo-feature-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.seo-feature-list li strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* FAQ */
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.faq-item {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.faq-item:first-child {
+    border-top: 1px solid var(--border-color);
+}
+
+.faq-question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: left;
+    transition: color 0.2s;
+}
+
+.faq-question:hover {
+    color: var(--primary-color);
+}
+
+.faq-icon {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    margin-left: 1rem;
+}
+
+.faq-answer {
+    padding: 0 0 1rem;
+}
+
+.faq-answer p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Footer link */
+.seo-footer {
+    text-align: center;
+    padding-top: 1rem;
+}
+
+.seo-footer-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
+/* How-to-Use Steps */
+.seo-how-to {
+    margin-top: 0.5rem;
+}
+
+.how-to-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.how-to-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.step-number {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--primary-color, #7c4dff);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.15rem;
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.2rem;
+}
+
+.step-description {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .seo-content {
+        padding: 1.5rem 1rem 2rem;
+    }
+
+    .seo-heading {
+        font-size: 1.15rem;
+    }
+
+    .faq-question {
+        padding: 0.85rem 0;
+        min-height: 48px;
+        font-size: 0.9rem;
+    }
+
+    .how-to-step {
+        gap: 0.75rem;
+    }
+
+    .step-number {
+        width: 1.75rem;
+        height: 1.75rem;
+        font-size: 0.8rem;
+    }
+
+    .step-title {
+        font-size: 0.9rem;
+    }
+
+    .step-description {
+        font-size: 0.85rem;
+    }
+
+    .seo-text {
+        font-size: 0.9rem;
+    }
+
+    .seo-feature-list li {
+        font-size: 0.9rem;
+    }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .seo-content {
+        padding: 2rem 2rem 3rem;
+    }
+
+    .seo-content-inner {
+        gap: 2rem;
+    }
+}

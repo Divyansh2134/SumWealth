@@ -37,7 +37,7 @@
 .summary-header h2 {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #1f2937;
+    color: var(--text-primary);
     font-family: "Computer Modern Sans", sans-serif;
 }
 
@@ -48,10 +48,10 @@
 }
 
 .summary-card {
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     border-radius: 0.75rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    border: 1px solid #e5e7eb;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -86,10 +86,10 @@
 }
 
 .chart-wrapper {
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     border-radius: 0.75rem;
     padding: 0.75rem;
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--border-color);
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -102,9 +102,9 @@
 .chart-container-resizable {
     resize: y;
     overflow: auto;
-    background-color: #f8fafc;
+    background-color: var(--bg-secondary);
     border-radius: 0.5rem;
-    border: 1px solid #f1f5f9;
+    border: 1px solid var(--border-color);
     padding: 0.5rem;
     position: relative;
     margin-left: auto;
@@ -120,7 +120,7 @@
 .section-title {
     font-size: 1rem;
     font-weight: 600;
-    color: #374151;
+    color: var(--text-primary);
     margin-bottom: 0.75rem;
     text-align: center;
 }
@@ -139,9 +139,9 @@
 
 /* Tooltip Styles */
 .custom-chart-tooltip {
-    background-color: white;
+    background-color: var(--card-bg);
     padding: 0.75rem;
-    border: 1px solid #f1f5f9;
+    border: 1px solid var(--border-color);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     border-radius: 1rem;
     overflow: hidden;
@@ -162,7 +162,7 @@
 .tooltip-title {
     font-size: 0.875rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
 
@@ -203,7 +203,7 @@
 .tooltip-footer {
     margin-top: 0.75rem;
     padding-top: 0.5rem;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;

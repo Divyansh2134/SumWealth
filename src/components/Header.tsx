@@ -14,7 +14,7 @@ export const Header: React.FC = () => {
   return (
     <header className="header">
       <div className="container header__content">
-        <h1 className="header__title">Income Planner</h1>
+        <span className="header__title" role="heading" aria-level={2}>Income Planner</span>
         <div className="header-actions">
           <div className="currency-selector" style={{ position: 'relative', marginRight: '0.5rem' }}>
             <button
